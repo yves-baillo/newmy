@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HYSSOP | Admin Login</title>
+  <!-- ─── FAVICON ─── -->
+  <link rel="icon" href="https://i.postimg.cc/dtp1VnDR/Gemini-Generated-Image-q4zen2q4zen2q4ze.jpg" type="image/jpeg" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" />
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      padding: 20px;
+      position: relative;
+      background: #0a0d0b;
+    }
+
+    /* ── FULL‑SCREEN BACKGROUND ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: -2;
+      background: url('https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=1600&q=80') center center / cover no-repeat fixed;
+    }
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      background: rgba(8, 11, 9, 0.6);
+      backdrop-filter: blur(3px);
+    }
+
+    /* ── LOGIN CARD ── */
+    .login-card {
+      width: 100%;
+      max-width: 440px;
+      background: rgba(255, 255, 255, 0.04);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 32px;
+      padding: 52px 44px 44px;
+      box-shadow: 0 40px 100px rgba(0, 0, 0, 0.7);
+      animation: slideUp 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* subtle gold glow behind card */
+    .login-card::before {
+      content: '';
+      position: absolute;
+      top: -40%;
+      right: -30%;
+      width: 300px;
+      height: 300px;
+      background: radial-gradient(circle, rgba(215, 173, 69, 0.06), transparent 70%);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+    .login-card::after {
+      content: '';
+      position: absolute;
+      bottom: -30%;
+      left: -20%;
+      width: 250px;
+      height: 250px;
+      background: radial-gradient(circle, rgba(215, 173, 69, 0.04), transparent 70%);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(40px) scale(0.96);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    /* ── LOGO ── */
+    .brand {
+      text-align: center;
+      margin-bottom: 36px;
+      position: relative;
+      z-index: 1;
+    }
+    .brand .logo-icon {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      border: 2px solid rgba(215, 173, 69, 0.4);
+      box-shadow: 0 0 40px rgba(215, 173, 69, 0.08);
+      object-fit: cover;
+      transition: transform 0.4s ease;
+      margin-bottom: 14px;
+    }
+    .brand .logo-icon:hover {
+      transform: scale(1.06) rotate(3deg);
+    }
+    .brand h1 {
+      font-family: Georgia, serif;
+      font-size: 32px;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: 0.5px;
+    }
+    .brand h1 span {
+      color: #d7ad45;
+    }
+    .brand .subtitle {
+      color: #8a8f8c;
+      font-size: 14px;
+      margin-top: 4px;
+      letter-spacing: 0.3px;
+    }
+
+    /* ── TYPEWRITER TAGLINE ── */
+    .tagline-wrapper {
+      text-align: center;
+      margin-bottom: 32px;
+      min-height: 32px;
+      position: relative;
+      z-index: 1;
+    }
+    .tagline-wrapper .tagline {
+      color: #d7ad45;
+      font-size: 16px;
+      font-weight: 500;
+      letter-spacing: 0.3px;
+    }
+    .tagline-wrapper .tagline .typewriter {
+      display: inline-block;
+      border-right: 2.5px solid #d7ad45;
+      padding-right: 6px;
+      animation: blink 0.8s step-end infinite;
+    }
+    @keyframes blink {
+      50% {
+        border-color: transparent;
+      }
+    }
+
+    /* ── FORM ── */
+    .form-group {
+      margin-bottom: 22px;
+      position: relative;
+      z-index: 1;
+    }
+    .form-group label {
+      display: block;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: #b0b5b2;
+      margin-bottom: 8px;
+    }
+    .form-group .input-wrap {
+      position: relative;
+    }
+    .form-group .input-wrap i {
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #666;
+      font-size: 16px;
+      transition: color 0.3s;
+    }
+    .form-group input {
+      width: 100%;
+      padding: 14px 18px 14px 46px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+      background: rgba(0, 0, 0, 0.3);
+      color: #fff;
+      font-size: 15px;
+      outline: none;
+      transition: all 0.3s;
+    }
+    .form-group input:focus {
+      border-color: #d7ad45;
+      background: rgba(0, 0, 0, 0.45);
+      box-shadow: 0 0 0 4px rgba(215, 173, 69, 0.08);
+    }
+    .form-group input:focus + .input-wrap i,
+    .form-group input:focus ~ .input-wrap i {
+      color: #d7ad45;
+    }
+
+    /* ── BUTTON ── */
+    .btn-login {
+      width: 100%;
+      padding: 16px;
+      border: none;
+      border-radius: 50px;
+      background: #d7ad45;
+      color: #111;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-top: 6px;
+      position: relative;
+      z-index: 1;
+      letter-spacing: 0.5px;
+    }
+    .btn-login:hover {
+      background: #e8c25a;
+      transform: translateY(-2px);
+      box-shadow: 0 12px 40px rgba(215, 173, 69, 0.3);
+    }
+    .btn-login:active {
+      transform: translateY(0);
+    }
+
+    /* ── ERROR ── */
+    .error-message {
+      color: #e74c3c;
+      font-size: 13px;
+      margin-top: 16px;
+      text-align: center;
+      display: none;
+      position: relative;
+      z-index: 1;
+    }
+    .error-message.show {
+      display: block;
+      animation: shake 0.4s ease;
+    }
+    @keyframes shake {
+      0%,
+      100% {
+        transform: translateX(0);
+      }
+      25% {
+        transform: translateX(-8px);
+      }
+      75% {
+        transform: translateX(8px);
+      }
+    }
+
+    /* ── FOOTER ── */
+    .footer-links {
+      margin-top: 24px;
+      text-align: center;
+      color: #666;
+      font-size: 12px;
+      position: relative;
+      z-index: 1;
+    }
+    .footer-links strong {
+      color: #d7ad45;
+    }
+    .footer-links a {
+      color: #d7ad45;
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+    .footer-links a:hover {
+      color: #e8c25a;
+    }
+
+    /* ── DECORATIVE LINE ── */
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 20px 0 6px;
+      position: relative;
+      z-index: 1;
+    }
+    .divider::before,
+    .divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: rgba(255, 255, 255, 0.06);
+    }
+    .divider span {
+      color: #555;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    /* ── BACK TO WEBSITE ── */
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: #888;
+      font-size: 13px;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      margin-top: 18px;
+      padding: 6px 12px;
+      border-radius: 30px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      position: relative;
+      z-index: 1;
+    }
+    .back-link:hover {
+      color: #d7ad45;
+      border-color: rgba(215, 173, 69, 0.2);
+      background: rgba(215, 173, 69, 0.06);
+      transform: translateX(-3px);
+    }
+    .back-link i {
+      font-size: 14px;
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 480px) {
+      .login-card {
+        padding: 36px 24px 28px;
+        border-radius: 24px;
+      }
+      .brand .logo-icon {
+        width: 64px;
+        height: 64px;
+      }
+      .brand h1 {
+        font-size: 26px;
+      }
+      .tagline-wrapper .tagline {
+        font-size: 14px;
+      }
+      .back-link {
+        font-size: 12px;
+        padding: 4px 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="login-card">
+
+    <!-- ── LOGO & BRAND ── -->
+    <div class="brand">
+      <img class="logo-icon" src="https://i.postimg.cc/dtp1VnDR/Gemini-Generated-Image-q4zen2q4zen2q4ze.jpg" alt="Hyssop Choir Logo" />
+      <h1>HYSSOP <span>ADMIN</span></h1>
+      <p class="subtitle">Manage news & updates</p>
+    </div>
+
+    <!-- ── TYPEWRITER TAGLINE ── -->
+    <div class="tagline-wrapper">
+      <div class="tagline">
+        <span id="typewriterText" class="typewriter"></span>
+      </div>
+    </div>
+
+    <!-- ── LOGIN FORM ── -->
+    <form id="loginForm">
+      <div class="form-group">
+        <label for="username">Username</label>
+        <div class="input-wrap">
+          <i class="fa-regular fa-user"></i>
+          <input type="text" id="username" placeholder="admin" required autofocus />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="password">Password</label>
+        <div class="input-wrap">
+          <i class="fa-regular fa-lock"></i>
+          <input type="password" id="password" placeholder="••••••••" required />
+        </div>
+      </div>
+
+      <button type="submit" class="btn-login">
+        <i class="fa-regular fa-right-to-bracket"></i> Sign In
+      </button>
+
+      <div class="error-message" id="loginError">Invalid credentials.</div>
+    </form>
+
+    <!-- ── DIVIDER ── -->
+    <div class="divider">
+      <span>Access</span>
+    </div>
+
+    <!-- ── FOOTER ── -->
+    <div class="footer-links">
+  
+      <!-- ── BACK TO WEBSITE ── -->
+      <a href="/" class="back-link">
+        <i class="fa-solid fa-arrow-left"></i> Back to Website
+      </a>
+    </div>
+
+  </div>
+
+  <script>
+    // ── Typewriter Effect ──
+    (function typeWriter() {
+      const texts = [
+        'Worship that inspires faith.',
+        'Gospel that transforms lives.',
+        'Music that heals souls.',
+        'Praise that lifts hearts.',
+        'Sharing the message of Christ.'
+      ];
+      let index = 0;
+      const el = document.getElementById('typewriterText');
+      let charIndex = 0;
+      let isDeleting = false;
+      let currentText = '';
+
+      function type() {
+        const fullText = texts[index];
+        if (isDeleting) {
+          currentText = fullText.substring(0, charIndex--);
+          el.textContent = currentText;
+          if (charIndex < 0) {
+            isDeleting = false;
+            index = (index + 1) % texts.length;
+            setTimeout(type, 800);
+            return;
+          }
+          setTimeout(type, 40);
+        } else {
+          currentText = fullText.substring(0, charIndex++);
+          el.textContent = currentText;
+          if (charIndex > fullText.length) {
+            isDeleting = true;
+            setTimeout(type, 2000);
+            return;
+          }
+          setTimeout(type, 80);
+        }
+      }
+      type();
+    })();
+
+    // ── Login Logic ──
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value.trim();
+      const errorEl = document.getElementById('loginError');
+
+      if (!username || !password) {
+        errorEl.textContent = 'Please fill in all fields.';
+        errorEl.classList.add('show');
+        return;
+      }
+
+      try {
+        const res = await fetch('/api/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password })
+        });
+        const data = await res.json();
+        if (data.success) {
+          window.location.href = '/admin/dashboard.html';
+        } else {
+          errorEl.textContent = 'Invalid username or password.';
+          errorEl.classList.add('show');
+          errorEl.style.animation = 'none';
+          requestAnimationFrame(() => {
+            errorEl.style.animation = 'shake 0.4s ease';
+          });
+        }
+      } catch {
+        errorEl.textContent = 'Network error. Please try again.';
+        errorEl.classList.add('show');
+      }
+    });
+
+    // ── Clear error on input ──
+    document.querySelectorAll('#loginForm input').forEach(input => {
+      input.addEventListener('input', () => {
+        document.getElementById('loginError').classList.remove('show');
+      });
+    });
+  </script>
+
+</body>
+</html>
