@@ -399,6 +399,7 @@ header.scrolled .logo-image{width:56px;height:56px}
 
 /* ══════════════════════════════════════════
    HERO (no rounded frame, no meta pill)
+   Content pushed down so background photos show more
 ══════════════════════════════════════════ */
 .hero{
   position:relative;min-height:100svh;
@@ -455,7 +456,7 @@ header.scrolled .logo-image{width:56px;height:56px}
 .hero-content{
   position:relative;z-index:5;
   width:min(920px,92%);
-  padding:110px 30px 110px;
+  padding:180px 30px 90px;
   text-align:center;
   display:flex;flex-direction:column;align-items:center;
   animation:heroEntry 1.2s var(--ease) both;
@@ -1201,6 +1202,7 @@ footer{
 @media (max-width:1100px){
   .nav-links{gap:20px}
   .nav-links a{font-size:12px}
+  .hero-content{padding-top:160px}
 }
 @media (max-width:950px){
   header,header.scrolled{min-height:100px}
@@ -1259,7 +1261,7 @@ footer{
   .navbar{min-height:80px}
   header.scrolled .navbar{min-height:60px}
   .hero{min-height:780px}
-  .hero-content{padding:96px 10px 110px}
+  .hero-content{padding:140px 10px 90px}
   .hero-title{font-size:clamp(2.2rem,11vw,3rem)}
   .hero-buttons{flex-direction:column;align-items:stretch}
   .btn{width:100%}
@@ -1370,7 +1372,7 @@ footer{
   </div>
 </div>
 
-<!-- HERO (no meta pill now) -->
+<!-- HERO -->
 <section class="hero" id="home">
   <div class="hero-slides">
     <div class="hero-slide active" data-title="Event Image"></div>
@@ -1745,7 +1747,7 @@ backToTop.addEventListener('click',()=>window.scrollTo({top:0,behavior:'smooth'}
 const headerEl = document.getElementById('siteHeader');
 window.addEventListener('scroll',()=>{ headerEl.classList.toggle('scrolled', window.scrollY > 40); });
 
-/* Hero slider */
+/* Hero slider (no meta pill → progressBar/heroLabel optional) */
 const heroSlides = document.querySelectorAll('.hero-slide');
 const heroLabel = document.getElementById('heroSongLabel');
 const progressBar = document.getElementById('heroProgressBar');
@@ -2148,7 +2150,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   applyTranslation('en');
 });
 
-console.log('HYSSOP CHOIR — transparent bell, no hero meta pill.');
+console.log('HYSSOP CHOIR — hero pushed down, transparent bell.');
 </script>
 
 </body>
