@@ -53,12 +53,20 @@ if (!adminExists) {
 let news = readJSON(NEWS_FILE, []);
 let notifications = readJSON(NOTIFICATIONS_FILE, []);
 
-function addNotification(title, message, type = 'news') {
+/**
+ * Add a notification.
+ * @param {string} title
+ * @param {string} message
+ * @param {string} type   - 'news' | 'youtube' | 'info' ...
+ * @param {string} image  - optional image URL (e.g. '/uploads/xxx.jpg')
+ */
+function addNotification(title, message, type = 'news', image = null) {
   const newNotif = {
     id: Date.now() + Math.round(Math.random() * 1000),
     title,
     message,
     type,
+    image_url: image || null,
     created_at: new Date().toISOString(),
     read: false
   };
@@ -152,7 +160,15 @@ app.post('/api/news', isAuthenticated, upload.single('image'), (req, res) => {
   };
   news.push(newItem);
   writeJSON(NEWS_FILE, news);
-  addNotification(`📰 New News: ${newItem.title}`, `A new news article was published.`, 'news');
+
+  // 🔔 Attach the news image to the notification too
+  addNotification(
+    `📰 New News: ${newItem.title}`,
+    'A new news article was published.',
+    'news',
+    image_url
+  );
+
   res.status(201).json(newItem);
 });
 
@@ -199,26 +215,33 @@ app.delete('/api/news/:id', isAuthenticated, (req, res) => {
 });
 
 // ---- Notifications ----
+// List (sorted newest first)
 app.get('/api/notifications', (req, res) => {
   const sorted = [...notifications].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
   res.json(sorted);
 });
 
+// Mark as read (single id, or all)
 app.post('/api/notifications/read', (req, res) => {
   const { id, all } = req.body;
   if (all) {
     notifications.forEach(n => n.read = true);
-  } else if (id) {
-    const notif = notifications.find(n => n.id === id);
+  } else if (id != null) {
+    const notif = notifications.find(n => n.id === Number(id));
     if (notif) notif.read = true;
   }
   writeJSON(NOTIFICATIONS_FILE, notifications);
   res.json({ success: true });
 });
 
+// Delete a single notification
 app.delete('/api/notifications/:id', (req, res) => {
   const id = parseInt(req.params.id);
+  const before = notifications.length;
   notifications = notifications.filter(n => n.id !== id);
+  if (notifications.length === before) {
+    return res.status(404).json({ error: 'Notification not found' });
+  }
   writeJSON(NOTIFICATIONS_FILE, notifications);
   res.json({ success: true });
 });
@@ -322,7 +345,7 @@ app.get('/', (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
-  console.log(`📰 Admin login: http://localhost:${PORT}/admin/login.html`);
-  console.log(`📊 Dashboard: http://localhost:${PORT}/admin/dashboard.html`);
+  console.log(`Server running on port ${PORT}`);
+  console.log(`Admin login: http://localhost:${PORT}/admin/login.html`);
+  console.log(`Dashboard: http://localhost:${PORT}/admin/dashboard.html`);
 });

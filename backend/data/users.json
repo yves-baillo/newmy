@@ -4,5 +4,11 @@
     "username": "admin",
     "salt": "f4dea467e8316542975d8fbd17c0a079",
     "hash": "fbdf6a208a83f711ccd522221df49333571f8f7ea75488b583dd28efa424dee22e5f5ba6a2eb6db914665d1d353fa8143d31723a67b4db66e56f5d49e6f52bd7"
+  },
+  {
+    "id": 1789311841285,
+    "username": "hyssop choir admin",
+    "salt": "3e2e4dcff00e73ffe6ba1513cca8f330",
+    "hash": "09b607c69adf50b829917e3f39529618ab9826a7235086d5e88d9be7b9ec0ac87ea8de05880790d84e594a447e79fe157e32a6b3e7bc732a1b975e83b8dec66a"
   }
 ]
