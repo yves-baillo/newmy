@@ -1824,6 +1824,14 @@ document.getElementById('contactForm').addEventListener('submit', async function
     alert('Please fill in all fields.');
     return;
   }
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
+    alert('Please enter a valid email address.');
+    return;
+  }
+  if(message.length < 5){
+    alert('Your message must be at least 5 characters.');
+    return;
+  }
 
   btn.disabled = true;
   btnText.textContent = 'SENDING...';
@@ -1852,8 +1860,9 @@ document.getElementById('contactForm').addEventListener('submit', async function
 
   }catch(err){
     console.error(err);
-    btnText.textContent = '✗ FAILED — TRY AGAIN';
+    btnText.textContent = '✗ ' + (err.message || 'FAILED — TRY AGAIN').toUpperCase();
     btn.style.background = 'linear-gradient(135deg,#ef4444,#b91c1c)';
+    alert(err.message || 'Failed to send message. Please try again.');
 
     setTimeout(() => {
       btnText.textContent = originalText;
@@ -1986,15 +1995,21 @@ loadMoreBtn.addEventListener('click',function(){
 });
 
 /* ══════════════════════════════════════════
-   NOTIFICATIONS
+   NOTIFICATIONS  (contact messages hidden)
 ══════════════════════════════════════════ */
 let allNotifs = [];
 const notifList = document.getElementById('notificationList');
 
+// 🔒 Notification types that must NEVER appear on the public site
+const HIDDEN_NOTIF_TYPES = ['contact'];
+
 async function fetchNotifs(){
   try{
     const res = await fetch('/api/notifications');
-    allNotifs = await res.json();
+    const data = await res.json();
+    // Filter out private notification types
+    allNotifs = (Array.isArray(data) ? data : [])
+      .filter(n => !HIDDEN_NOTIF_TYPES.includes(n.type));
     renderNotifs();
     updateBadge();
   }catch(e){ console.error('Notif error',e); }
@@ -2020,9 +2035,7 @@ function renderNotifs(){
       ? 'fa-brands fa-youtube'
       : n.type === 'news'
         ? 'fa-regular fa-newspaper'
-        : n.type === 'contact'
-          ? 'fa-regular fa-envelope'
-          : 'fa-regular fa-bell';
+        : 'fa-regular fa-bell';
     const time = timeAgo(new Date(n.created_at));
 
     const media = n.image_url
@@ -2198,7 +2211,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   applyTranslation('en');
 });
 
-console.log('HYSSOP CHOIR — contact endpoint wired. Purple + Yellow theme.');
+console.log('HYSSOP CHOIR — contact notifications hidden from public site.');
 </script>
 
 </body>
