@@ -25,6 +25,7 @@ const DATA_DIR = path.join(__dirname, 'data');
 const USERS_FILE = path.join(DATA_DIR, 'users.json');
 const NEWS_FILE = path.join(DATA_DIR, 'news.json');
 const NOTIFICATIONS_FILE = path.join(DATA_DIR, 'notifications.json');
+const MESSAGES_FILE = path.join(DATA_DIR, 'messages.json');   // ← NEW
 const UPLOAD_DIR = path.join(__dirname, 'uploads');
 
 if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
@@ -52,14 +53,8 @@ if (!adminExists) {
 
 let news = readJSON(NEWS_FILE, []);
 let notifications = readJSON(NOTIFICATIONS_FILE, []);
+let messages = readJSON(MESSAGES_FILE, []);   // ← NEW
 
-/**
- * Add a notification.
- * @param {string} title
- * @param {string} message
- * @param {string} type   - 'news' | 'youtube' | 'info' ...
- * @param {string} image  - optional image URL (e.g. '/uploads/xxx.jpg')
- */
 function addNotification(title, message, type = 'news', image = null) {
   const newNotif = {
     id: Date.now() + Math.round(Math.random() * 1000),
@@ -161,7 +156,6 @@ app.post('/api/news', isAuthenticated, upload.single('image'), (req, res) => {
   news.push(newItem);
   writeJSON(NEWS_FILE, news);
 
-  // 🔔 Attach the news image to the notification too
   addNotification(
     `📰 New News: ${newItem.title}`,
     'A new news article was published.',
@@ -214,14 +208,86 @@ app.delete('/api/news/:id', isAuthenticated, (req, res) => {
   res.json({ success: true });
 });
 
+// ══════════════════════════════════════════
+//  CONTACT MESSAGES  ← NEW
+// ══════════════════════════════════════════
+
+// Public: anyone can submit a contact message
+app.post('/api/contact', (req, res) => {
+  const name = (req.body.name || '').trim();
+  const email = (req.body.email || '').trim();
+  const subject = (req.body.subject || '').trim();
+  const message = (req.body.message || '').trim();
+
+  if (!name || !email || !subject || !message) {
+    return res.status(400).json({ error: 'All fields are required.' });
+  }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return res.status(400).json({ error: 'Please enter a valid email.' });
+  }
+  if (message.length < 5) {
+    return res.status(400).json({ error: 'Message is too short.' });
+  }
+
+  const newMessage = {
+    id: Date.now() + Math.round(Math.random() * 1000),
+    name,
+    email,
+    subject,
+    message,
+    read: false,
+    created_at: new Date().toISOString()
+  };
+  messages.push(newMessage);
+  writeJSON(MESSAGES_FILE, messages);
+
+  // 🔔 Trigger a notification
+  addNotification(
+    `✉️ New message from ${name}`,
+    subject,
+    'contact'
+  );
+
+  res.status(201).json({ success: true, id: newMessage.id });
+});
+
+// Admin: list all messages
+app.get('/api/messages', isAuthenticated, (req, res) => {
+  const sorted = [...messages].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+  res.json(sorted);
+});
+
+// Admin: mark as read
+app.post('/api/messages/read', isAuthenticated, (req, res) => {
+  const { id, all } = req.body;
+  if (all) {
+    messages.forEach(m => m.read = true);
+  } else if (id != null) {
+    const m = messages.find(x => x.id === Number(id));
+    if (m) m.read = true;
+  }
+  writeJSON(MESSAGES_FILE, messages);
+  res.json({ success: true });
+});
+
+// Admin: delete a message
+app.delete('/api/messages/:id', isAuthenticated, (req, res) => {
+  const id = parseInt(req.params.id);
+  const before = messages.length;
+  messages = messages.filter(m => m.id !== id);
+  if (messages.length === before) {
+    return res.status(404).json({ error: 'Message not found' });
+  }
+  writeJSON(MESSAGES_FILE, messages);
+  res.json({ success: true });
+});
+
 // ---- Notifications ----
-// List (sorted newest first)
 app.get('/api/notifications', (req, res) => {
   const sorted = [...notifications].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
   res.json(sorted);
 });
 
-// Mark as read (single id, or all)
 app.post('/api/notifications/read', (req, res) => {
   const { id, all } = req.body;
   if (all) {
@@ -234,7 +300,6 @@ app.post('/api/notifications/read', (req, res) => {
   res.json({ success: true });
 });
 
-// Delete a single notification
 app.delete('/api/notifications/:id', (req, res) => {
   const id = parseInt(req.params.id);
   const before = notifications.length;
@@ -345,7 +410,7 @@ app.get('/', (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-  console.log(`Admin login: http://localhost:${PORT}/admin/login.html`);
-  console.log(`Dashboard: http://localhost:${PORT}/admin/dashboard.html`);
+  console.log(`🚀 Server running on port ${PORT}`);
+  console.log(`📰 Admin login: http://localhost:${PORT}/admin/login.html`);
+  console.log(`📊 Dashboard: http://localhost:${PORT}/admin/dashboard.html`);
 });

@@ -398,8 +398,7 @@ header.scrolled .logo-image{width:56px;height:56px}
 .nav-overlay.active{opacity:1;visibility:visible}
 
 /* ══════════════════════════════════════════
-   HERO (no rounded frame, no meta pill)
-   Content pushed down so background photos show more
+   HERO
 ══════════════════════════════════════════ */
 .hero{
   position:relative;min-height:100svh;
@@ -1000,6 +999,7 @@ section:not(.hero){padding:120px 0;position:relative}
   transform:translateY(-4px) scale(1.02);
   box-shadow:0 16px 50px var(--yellow-glow);
 }
+.form-submit:disabled{opacity:.85;cursor:not-allowed;transform:none}
 
 /* ══════════════════════════════════════════
    IDENTITY
@@ -1747,7 +1747,7 @@ backToTop.addEventListener('click',()=>window.scrollTo({top:0,behavior:'smooth'}
 const headerEl = document.getElementById('siteHeader');
 window.addEventListener('scroll',()=>{ headerEl.classList.toggle('scrolled', window.scrollY > 40); });
 
-/* Hero slider (no meta pill → progressBar/heroLabel optional) */
+/* Hero slider */
 const heroSlides = document.querySelectorAll('.hero-slide');
 const heroLabel = document.getElementById('heroSongLabel');
 const progressBar = document.getElementById('heroProgressBar');
@@ -1806,15 +1806,61 @@ if('IntersectionObserver' in window){
   revealEls.forEach(el=>el.classList.add('visible'));
 }
 
-/* Contact form */
-document.getElementById('contactForm').addEventListener('submit',function(e){
+/* ══════════════════════════════════════════
+   CONTACT FORM → /api/contact
+══════════════════════════════════════════ */
+document.getElementById('contactForm').addEventListener('submit', async function(e){
   e.preventDefault();
-  const n = document.getElementById('contactName').value.trim();
-  const em = document.getElementById('contactEmail').value.trim();
-  const sub = document.getElementById('contactSubject').value.trim();
-  const msg = document.getElementById('contactMessage').value.trim();
-  const body = `Hello Hyssop Choir,\n\nName: ${n}\nEmail: ${em}\n\n${msg}`;
-  window.location.href = `mailto:hyssopchoirfamily@gmail.com?subject=${encodeURIComponent(sub)}&body=${encodeURIComponent(body)}`;
+  const btn = document.getElementById('formSubmit');
+  const btnText = document.getElementById('formSubmitText');
+  const originalText = btnText.textContent;
+
+  const name    = document.getElementById('contactName').value.trim();
+  const email   = document.getElementById('contactEmail').value.trim();
+  const subject = document.getElementById('contactSubject').value.trim();
+  const message = document.getElementById('contactMessage').value.trim();
+
+  if(!name || !email || !subject || !message){
+    alert('Please fill in all fields.');
+    return;
+  }
+
+  btn.disabled = true;
+  btnText.textContent = 'SENDING...';
+
+  try{
+    const res = await fetch('/api/contact', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, email, subject, message })
+    });
+    const data = await res.json();
+
+    if(!res.ok){
+      throw new Error(data.error || 'Failed to send message.');
+    }
+
+    btnText.textContent = '✓ MESSAGE SENT';
+    btn.style.background = 'linear-gradient(135deg,#10b981,#059669)';
+    document.getElementById('contactForm').reset();
+
+    setTimeout(() => {
+      btnText.textContent = originalText;
+      btn.style.background = '';
+      btn.disabled = false;
+    }, 3000);
+
+  }catch(err){
+    console.error(err);
+    btnText.textContent = '✗ FAILED — TRY AGAIN';
+    btn.style.background = 'linear-gradient(135deg,#ef4444,#b91c1c)';
+
+    setTimeout(() => {
+      btnText.textContent = originalText;
+      btn.style.background = '';
+      btn.disabled = false;
+    }, 3000);
+  }
 });
 
 /* News modal */
@@ -1974,7 +2020,9 @@ function renderNotifs(){
       ? 'fa-brands fa-youtube'
       : n.type === 'news'
         ? 'fa-regular fa-newspaper'
-        : 'fa-regular fa-bell';
+        : n.type === 'contact'
+          ? 'fa-regular fa-envelope'
+          : 'fa-regular fa-bell';
     const time = timeAgo(new Date(n.created_at));
 
     const media = n.image_url
@@ -2150,7 +2198,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   applyTranslation('en');
 });
 
-console.log('HYSSOP CHOIR — hero pushed down, transparent bell.');
+console.log('HYSSOP CHOIR — contact endpoint wired. Purple + Yellow theme.');
 </script>
 
 </body>

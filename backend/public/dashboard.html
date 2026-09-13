@@ -1,1068 +1,1718 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>HYSSOP | Admin Dashboard</title>
-    <!-- ─── FAVICON ─── -->
-    <link rel="icon" href="3.jpeg" type="image/jpeg" />
-    <!-- ─── FONT AWESOME (stable CDN) ─── -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/all.min.css" />
-    <style>
-        /* ── RESET & BASE ── */
-        * { margin:0; padding:0; box-sizing:border-box; }
-        body {
-            min-height: 100vh;
-            background: #0a0d0b;
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            color: #e8edec;
-            padding: 24px;
-            padding-top: 100px;
-            position: relative;
-        }
-        body::before {
-            content: '';
-            position: fixed;
-            inset: 0;
-            z-index: -2;
-            background: url('') center center / cover no-repeat fixed;
-        }
-        body::after {
-            content: '';
-            position: fixed;
-            inset: 0;
-            z-index: -1;
-            background: rgba(8, 11, 9, 0.72);
-            backdrop-filter: blur(2px);
-        }
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>HYSSOP | Admin Dashboard</title>
+<link rel="icon" href="3.jpeg" type="image/jpeg" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Cormorant+Garamond:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ══════════════════════════════════════════
+   RESET & TOKENS — PURPLE + YELLOW
+══════════════════════════════════════════ */
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0612;
+  --bg-2:#150c24;
+  --bg-3:#1d1233;
+  --border:rgba(139,92,246,.2);
+  --border-2:rgba(139,92,246,.4);
+  --text:#f5f1ff;
+  --text-2:#c4b8e0;
+  --text-3:#8a7da8;
+  --purple:#8b5cf6;
+  --purple-light:#a78bfa;
+  --purple-dark:#5b21b6;
+  --purple-glow:rgba(139,92,246,.35);
+  --yellow:#fbbf24;
+  --yellow-light:#fcd34d;
+  --yellow-glow:rgba(251,191,36,.35);
+  --green:#10b981;
+  --red:#ef4444;
+  --ease:cubic-bezier(.22,1,.36,1);
+}
+html{scroll-behavior:smooth}
+body{
+  min-height:100vh;
+  background:#0a0612;
+  color:var(--text);
+  font-family:'Inter',system-ui,-apple-system,sans-serif;
+  line-height:1.55;
+  padding:24px;
+  padding-top:110px;
+  -webkit-font-smoothing:antialiased;
+}
+a{color:inherit;text-decoration:none}
+img{display:block;max-width:100%}
+button{cursor:pointer;border:none;background:none;font-family:inherit;color:inherit}
 
-        .container { max-width:1400px; margin:0 auto; animation:fadeIn .8s ease; }
-        @keyframes fadeIn { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar-track{background:#0a0612}
+::-webkit-scrollbar-thumb{background:linear-gradient(180deg,var(--purple),var(--purple-dark));border-radius:20px;border:2px solid #0a0612}
+::-webkit-scrollbar-thumb:hover{background:linear-gradient(180deg,var(--purple-light),var(--purple))}
+::selection{background:var(--yellow);color:#0a0612}
 
-        /* ── PROFESSIONAL GLASS HEADER ── */
-        .dashboard-header {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 100;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px 32px;
-            background: rgba(10, 13, 11, 0.45);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-bottom: 1px solid rgba(255,255,255,0.07);
-            box-shadow: 0 4px 40px rgba(0,0,0,0.15);
-            flex-wrap: wrap;
-            gap: 12px;
-            transition: background 0.3s ease;
-        }
-        .dashboard-header::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            z-index: -1;
-            background: linear-gradient(180deg, rgba(215,173,69,0.03) 0%, transparent 100%);
-            pointer-events: none;
-        }
-        .dashboard-header .brand { display:flex; align-items:center; gap:14px; flex-shrink:0; }
-        .dashboard-header .brand img {
-            width: 44px; height:44px; border-radius:50%;
-            border:2px solid rgba(215,173,69,0.35);
-            box-shadow:0 0 30px rgba(215,173,69,0.08);
-            transition:transform .4s ease;
-            object-fit:cover;
-        }
-        .dashboard-header .brand img:hover { transform:scale(1.08) rotate(4deg); }
-        .dashboard-header .brand-text h1 {
-            font-family: Georgia, serif;
-            font-size: 22px;
-            font-weight: 700;
-            letter-spacing: -0.3px;
-            color: #fff;
-            text-shadow: 0 2px 20px rgba(0,0,0,0.2);
-            white-space:nowrap;
-        }
-        .dashboard-header .brand-text h1 span { color: #d7ad45; }
+.container{max-width:1400px;margin:0 auto;animation:fadeIn .7s var(--ease)}
+@keyframes fadeIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
 
-        /* ── HAMBURGER MENU ── */
-        .hamburger-btn {
-            display: none;
-            background: none;
-            border: none;
-            color: #ddd;
-            font-size: 26px;
-            cursor: pointer;
-            padding: 4px 8px;
-            transition: color 0.3s;
-            z-index: 101;
-        }
-        .hamburger-btn:hover {
-            color: #d7ad45;
-        }
+/* ══════════════════════════════════════════
+   HEADER
+══════════════════════════════════════════ */
+.dashboard-header{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  display:flex;justify-content:space-between;align-items:center;
+  padding:14px 32px;
+  background:rgba(10,6,18,.85);
+  backdrop-filter:blur(22px) saturate(140%);
+  -webkit-backdrop-filter:blur(22px) saturate(140%);
+  border-bottom:1px solid var(--border);
+  box-shadow:0 14px 50px rgba(0,0,0,.6),0 0 40px var(--purple-glow);
+  flex-wrap:wrap;gap:12px;
+}
+.brand{display:flex;align-items:center;gap:14px;flex-shrink:0}
+.brand img{
+  width:46px;height:46px;border-radius:50%;object-fit:cover;
+  border:2px solid var(--border-2);
+  box-shadow:0 0 25px var(--purple-glow);
+  transition:transform .4s var(--ease);
+}
+.brand img:hover{transform:scale(1.08) rotate(4deg)}
+.brand-text h1{
+  font-family:'Cormorant Garamond',Georgia,serif;
+  font-size:22px;font-weight:700;letter-spacing:-.3px;
+  color:#fff;
+}
+.brand-text h1 span{
+  background:linear-gradient(120deg,var(--yellow-light),var(--purple-light));
+  -webkit-background-clip:text;background-clip:text;
+  -webkit-text-fill-color:transparent;color:transparent;
+}
+.brand-text small{
+  display:block;font-size:10px;color:var(--text-3);
+  letter-spacing:2px;text-transform:uppercase;margin-top:-2px;
+}
 
-        /* ── HEADER ACTIONS (DESKTOP) ── */
-        .header-actions {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            flex-wrap: wrap;
-            margin-left: auto;
-        }
-        .header-actions .user-badge {
-            display:flex; align-items:center; gap:8px;
-            background:rgba(255,255,255,0.05);
-            backdrop-filter:blur(6px);
-            padding:5px 14px 5px 10px;
-            border-radius:40px;
-            border:1px solid rgba(255,255,255,0.06);
-            white-space:nowrap;
-        }
-        .header-actions .user-badge i { font-size:16px; color:#d7ad45; }
-        .header-actions .user-badge span { font-size:13px; font-weight:500; }
-        .header-actions .datetime {
-            font-size:12px; color:#aaa;
-            background:rgba(255,255,255,0.04);
-            padding:5px 14px;
-            border-radius:40px;
-            border:1px solid rgba(255,255,255,0.04);
-            backdrop-filter:blur(4px);
-            white-space:nowrap;
-        }
+.hamburger-btn{
+  display:none;color:var(--yellow);font-size:24px;
+  padding:6px 10px;border-radius:10px;
+  transition:all .3s var(--ease);z-index:101;
+}
+.hamburger-btn:hover{background:rgba(139,92,246,.15);transform:scale(1.05)}
 
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            padding: 8px 18px;
-            border-radius: 40px;
-            border: none;
-            font-weight: 600;
-            font-size: 13px;
-            cursor: pointer;
-            transition: all 0.25s ease;
-            text-decoration: none;
-            white-space: nowrap;
-        }
-        .btn i { font-size:14px; }
-        .btn-outline {
-            background: rgba(255,255,255,0.04);
-            border: 1px solid rgba(255,255,255,0.1);
-            color: #ddd;
-            backdrop-filter: blur(4px);
-        }
-        .btn-outline:hover { border-color:#d7ad45; color:#d7ad45; background:rgba(215,173,69,0.08); transform:translateY(-2px); }
-        .btn-primary { background:#d7ad45; color:#111; box-shadow:0 4px 20px rgba(215,173,69,0.15); }
-        .btn-primary:hover { background:#e8c25a; transform:translateY(-2px); box-shadow:0 8px 30px rgba(215,173,69,0.25); }
-        .btn-danger { background:#e74c3c; color:#fff; }
-        .btn-danger:hover { background:#c0392b; transform:translateY(-2px); }
-        .btn-sm { padding:4px 14px; font-size:12px; }
-        .btn-sm i { font-size:12px; }
-        .btn-success { background:#2ecc71; color:#111; }
-        .btn-success:hover { background:#27ae60; transform:translateY(-2px); }
+.header-actions{
+  display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+  margin-left:auto;
+}
+.user-badge{
+  display:flex;align-items:center;gap:8px;
+  background:rgba(139,92,246,.12);
+  backdrop-filter:blur(6px);
+  padding:6px 14px 6px 10px;border-radius:40px;
+  border:1px solid var(--border-2);
+  white-space:nowrap;
+}
+.user-badge i{font-size:15px;color:var(--yellow)}
+.user-badge span{font-size:13px;font-weight:600;color:#fff}
 
-        /* ── MOBILE MENU ── */
-        .mobile-menu {
-            display: none;
-            width: 100%;
-            flex-direction: column;
-            align-items: flex-end;
-            gap: 8px;
-            padding: 10px 0 6px 0;
-            background: rgba(10,13,11,0.6);
-            backdrop-filter: blur(12px);
-            border-radius: 12px;
-            margin-top: 8px;
-            border: 1px solid rgba(255,255,255,0.05);
-        }
-        .mobile-menu.open { display: flex; }
-        .mobile-menu .btn { width: 100%; justify-content: center; padding: 8px 12px; font-size: 13px; }
+.datetime{
+  font-size:12px;color:var(--text-2);
+  background:rgba(139,92,246,.08);
+  padding:6px 14px;border-radius:40px;
+  border:1px solid var(--border);
+  white-space:nowrap;
+}
 
-        /* ── RESPONSIVE ── */
-        @media (max-width: 768px) {
-            .dashboard-header { padding: 10px 20px; flex-wrap: nowrap; }
-            .header-actions { display: none; }
-            .hamburger-btn { display: block; margin-left: auto; order: 3; }
-            .dashboard-header .brand-text h1 { font-size: 18px; }
-            .dashboard-header .brand img { width: 36px; height: 36px; }
-            .mobile-menu { display: none; order: 4; flex-basis: 100%; }
-            .mobile-menu.open { display: flex; }
-            .mobile-menu .user-badge {
-                background: rgba(255,255,255,0.03);
-                border: 1px solid rgba(255,255,255,0.06);
-                padding: 4px 14px;
-                border-radius: 40px;
-                display: inline-flex;
-                align-items: center;
-                gap: 8px;
-                color: #ddd;
-                font-size: 13px;
-                width: 100%;
-                justify-content: center;
-            }
-            .mobile-menu .user-badge i { color: #d7ad45; }
-        }
+/* Buttons */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  padding:9px 18px;border-radius:40px;
+  font-weight:700;font-size:12px;letter-spacing:.3px;
+  transition:all .35s var(--ease);
+  border:1px solid transparent;
+  white-space:nowrap;
+}
+.btn i{font-size:13px}
+.btn-outline{
+  background:rgba(139,92,246,.1);
+  border-color:var(--border-2);
+  color:var(--purple-light);
+}
+.btn-outline:hover{
+  background:rgba(139,92,246,.25);
+  color:#fff;
+  transform:translateY(-2px);
+  box-shadow:0 8px 25px var(--purple-glow);
+}
+.btn-primary{
+  background:linear-gradient(135deg,var(--yellow-light),var(--yellow));
+  color:#0a0612;
+  box-shadow:0 10px 30px var(--yellow-glow);
+}
+.btn-primary:hover{
+  background:linear-gradient(135deg,#fff,var(--yellow-light));
+  transform:translateY(-2px);
+  box-shadow:0 14px 40px var(--yellow-glow);
+}
+.btn-danger{
+  background:rgba(239,68,68,.12);
+  border-color:rgba(239,68,68,.4);
+  color:#ff8080;
+}
+.btn-danger:hover{
+  background:var(--red);color:#fff;border-color:var(--red);
+  transform:translateY(-2px);box-shadow:0 8px 25px rgba(239,68,68,.4);
+}
+.btn-success{
+  background:linear-gradient(135deg,#10b981,#059669);
+  color:#fff;
+  box-shadow:0 10px 30px rgba(16,185,129,.3);
+}
+.btn-success:hover{
+  transform:translateY(-2px);box-shadow:0 14px 40px rgba(16,185,129,.4);
+}
+.btn-sm{padding:6px 12px;font-size:11px}
+.btn-sm i{font-size:11px}
 
-        @media (max-width: 480px) {
-            .dashboard-header .brand-text h1 { font-size: 15px; }
-            .dashboard-header .brand img { width: 30px; height:30px; }
-        }
+/* Mobile menu */
+.mobile-menu{
+  display:none;width:100%;flex-direction:column;gap:8px;
+  padding:14px;
+  background:rgba(21,12,36,.95);
+  backdrop-filter:blur(20px);
+  border-radius:16px;
+  border:1px solid var(--border);
+  margin-top:10px;
+}
+.mobile-menu.open{display:flex}
+.mobile-menu .btn{width:100%;justify-content:center;padding:10px}
 
-        /* ── WELCOME BANNER ── */
-        .welcome-banner {
-            background: rgba(255,255,255,0.04);
-            backdrop-filter: blur(8px);
-            border: 1px solid rgba(255,255,255,0.06);
-            border-radius: 24px;
-            padding: 24px 28px;
-            margin-bottom: 32px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            flex-wrap: wrap;
-        }
-        .welcome-banner .greeting { font-size:22px; font-weight:600; font-family:Georgia,serif; }
-        .welcome-banner .greeting span { color:#d7ad45; }
-        .welcome-banner .greeting .typewriter {
-            display:inline-block; border-right:2px solid #d7ad45;
-            padding-right:4px; animation:blink .8s step-end infinite;
-        }
-        @keyframes blink { 50%{border-color:transparent;} }
-        .welcome-banner .stats-mini {
-            margin-left:auto; display:flex; gap:20px;
-            background:rgba(0,0,0,0.2); padding:8px 18px; border-radius:60px; backdrop-filter:blur(4px);
-        }
-        .welcome-banner .stats-mini span { font-size:12px; color:#aaa; }
-        .welcome-banner .stats-mini strong { color:#d7ad45; font-weight:700; }
+/* ══════════════════════════════════════════
+   WELCOME BANNER
+══════════════════════════════════════════ */
+.welcome-banner{
+  background:linear-gradient(135deg,rgba(139,92,246,.12),rgba(251,191,36,.06));
+  backdrop-filter:blur(14px);
+  border:1px solid var(--border);
+  border-radius:24px;
+  padding:24px 28px;
+  margin-bottom:26px;
+  box-shadow:0 20px 60px rgba(0,0,0,.4),0 0 40px var(--purple-glow);
+  display:flex;align-items:center;gap:16px;flex-wrap:wrap;
+}
+.welcome-banner .greeting{
+  font-size:22px;font-weight:600;
+  font-family:'Cormorant Garamond',Georgia,serif;
+}
+.welcome-banner .greeting i{color:var(--yellow)}
+.welcome-banner .greeting span{color:var(--yellow-light)}
+.typewriter{
+  display:inline-block;border-right:2px solid var(--yellow);
+  padding-right:4px;margin-left:6px;
+  animation:blink .8s step-end infinite;
+}
+@keyframes blink{50%{border-color:transparent}}
+.welcome-banner .stats-mini{
+  margin-left:auto;display:flex;gap:20px;
+  background:rgba(10,6,18,.5);
+  padding:10px 20px;border-radius:60px;
+  border:1px solid var(--border);
+}
+.welcome-banner .stats-mini span{font-size:12px;color:var(--text-2)}
+.welcome-banner .stats-mini strong{color:var(--yellow);font-weight:800;font-size:14px}
 
-        /* ── STATS GRID ── */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 18px;
-            margin-bottom: 32px;
-        }
-        .stat-card {
-            background: rgba(255,255,255,0.03);
-            backdrop-filter: blur(6px);
-            border: 1px solid rgba(255,255,255,0.05);
-            border-radius: 18px;
-            padding: 20px 22px;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-        }
-        .stat-card:hover {
-            border-color: rgba(215,173,69,0.15);
-            transform: translateY(-3px);
-            background: rgba(255,255,255,0.05);
-        }
-        .stat-card .stat-label { font-size:11px; text-transform:uppercase; letter-spacing:1px; color:#8a8f8c; margin-bottom:6px; }
-        .stat-card .stat-label i { color:#d7ad45; margin-right:4px; }
-        .stat-card .stat-value { font-size:28px; font-weight:700; font-family:Georgia,serif; color:#f0f2f0; }
-        .stat-card .stat-value i { color:#d7ad45; font-size:22px; margin-right:4px; }
-        .stat-card .stat-sub { font-size:12px; color:#8a8f8c; margin-top:4px; }
+/* ══════════════════════════════════════════
+   STATS GRID
+══════════════════════════════════════════ */
+.stats-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+  gap:18px;margin-bottom:26px;
+}
+.stat-card{
+  background:linear-gradient(180deg,rgba(139,92,246,.08),rgba(139,92,246,.02));
+  backdrop-filter:blur(10px);
+  border:1px solid var(--border);
+  border-radius:20px;
+  padding:22px 24px;
+  transition:all .4s var(--ease);
+  position:relative;overflow:hidden;
+}
+.stat-card::before{
+  content:"";position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,var(--yellow),var(--purple),transparent);
+  opacity:.6;
+}
+.stat-card:hover{
+  border-color:var(--yellow);
+  transform:translateY(-4px);
+  box-shadow:0 20px 50px rgba(0,0,0,.5),0 0 40px var(--yellow-glow);
+}
+.stat-card .stat-label{
+  font-size:11px;text-transform:uppercase;letter-spacing:1.2px;
+  color:var(--text-3);margin-bottom:8px;font-weight:700;
+  display:flex;align-items:center;gap:6px;
+}
+.stat-card .stat-label i{color:var(--yellow)}
+.stat-card .stat-value{
+  font-size:30px;font-weight:700;
+  font-family:'Cormorant Garamond',Georgia,serif;
+  background:linear-gradient(120deg,var(--yellow-light),var(--yellow));
+  -webkit-background-clip:text;background-clip:text;
+  -webkit-text-fill-color:transparent;color:transparent;
+  line-height:1.1;
+}
+.stat-card .stat-sub{font-size:11px;color:var(--text-3);margin-top:6px;letter-spacing:.3px}
 
-        /* ── FORM CARD ── */
-        .form-card {
-            background: rgba(255,255,255,0.03);
-            backdrop-filter: blur(8px);
-            border: 1px solid rgba(255,255,255,0.05);
-            border-radius: 20px;
-            padding: 28px 32px;
-            margin-bottom: 36px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
-        }
-        .form-card h3 { font-size:20px; font-weight:600; margin-bottom:4px; font-family:Georgia,serif; }
-        .form-card h3 i { color:#d7ad45; margin-right:8px; }
-        .form-card .sub { color:#8a8f8c; font-size:13px; margin-bottom:20px; }
-        .form-grid { display:grid; grid-template-columns:1fr 1fr; gap:18px; }
-        .form-grid .full { grid-column:1 / -1; }
-        .form-group { display:flex; flex-direction:column; gap:5px; }
-        .form-group label { font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:0.8px; color:#b0b5b2; }
-        .form-group label i { color:#d7ad45; margin-right:4px; }
-        .form-group input, .form-group textarea {
-            background: rgba(0,0,0,0.3);
-            border: 1px solid rgba(255,255,255,0.06);
-            border-radius: 12px;
-            padding: 12px 14px;
-            color: #e8edec;
-            font-size: 14px;
-            outline: none;
-            transition: all 0.3s;
-        }
-        .form-group input:focus, .form-group textarea:focus {
-            border-color: #d7ad45;
-            box-shadow: 0 0 0 3px rgba(215,173,69,0.06);
-            background: rgba(0,0,0,0.4);
-        }
-        .form-group textarea { resize: vertical; min-height: 80px; }
-        .form-group input[type="file"] { padding:10px; background:rgba(0,0,0,0.2); cursor:pointer; }
-        .form-group input[type="file"]::file-selector-button {
-            background:rgba(215,173,69,0.12);
-            border:1px solid rgba(215,173,69,0.15);
-            border-radius:30px;
-            padding:4px 14px;
-            color:#d7ad45;
-            font-weight:600;
-            cursor:pointer;
-            transition:0.3s;
-        }
-        .form-group input[type="file"]::file-selector-button:hover { background:rgba(215,173,69,0.2); }
-        .form-actions { grid-column:1 / -1; display:flex; gap:10px; margin-top:6px; }
+/* ══════════════════════════════════════════
+   TABS
+══════════════════════════════════════════ */
+.tabs{
+  display:flex;gap:8px;margin-bottom:22px;
+  background:rgba(10,6,18,.4);
+  padding:6px;border-radius:16px;
+  border:1px solid var(--border);
+  overflow-x:auto;scrollbar-width:none;
+}
+.tabs::-webkit-scrollbar{display:none}
+.tab{
+  flex:1;min-width:140px;
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  padding:11px 20px;border-radius:12px;
+  font-size:12px;font-weight:700;letter-spacing:.4px;
+  color:var(--text-3);
+  background:transparent;
+  transition:all .35s var(--ease);
+  position:relative;
+}
+.tab i{font-size:13px}
+.tab:hover{color:var(--text);background:rgba(139,92,246,.08)}
+.tab.active{
+  background:linear-gradient(135deg,var(--purple),var(--purple-dark));
+  color:#fff;
+  box-shadow:0 8px 25px var(--purple-glow);
+}
+.tab .badge{
+  min-width:20px;height:20px;padding:0 6px;
+  border-radius:20px;
+  background:var(--red);
+  color:#fff;
+  font-size:10px;font-weight:800;
+  display:inline-flex;align-items:center;justify-content:center;
+  margin-left:4px;
+}
+.tab .badge:empty, .tab .badge[data-count="0"]{display:none}
 
-        /* ── NEWS LIST ── */
-        .news-section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 18px;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-        .news-section-header h2 { font-size:20px; font-weight:600; font-family:Georgia,serif; }
-        .news-section-header h2 i { color:#d7ad45; margin-right:8px; }
+.tab-panel{display:none;animation:fadeIn .5s var(--ease)}
+.tab-panel.active{display:block}
 
-        .news-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 22px;
-        }
-        .news-card {
-            background: rgba(255,255,255,0.03);
-            backdrop-filter: blur(6px);
-            border: 1px solid rgba(255,255,255,0.05);
-            border-radius: 18px;
-            overflow: hidden;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.12);
-        }
-        .news-card:hover {
-            border-color: rgba(215,173,69,0.15);
-            transform: translateY(-5px);
-            box-shadow: 0 12px 40px rgba(0,0,0,0.3);
-        }
-        .news-card .thumb { width:100%; height:170px; object-fit:cover; background:#111; border-bottom:1px solid rgba(255,255,255,0.04); }
-        .news-card .body { padding:18px 20px 20px; }
-        .news-card .body h4 { font-size:17px; font-weight:600; margin-bottom:4px; line-height:1.3; }
-        .news-card .body p { color:#b0b5b2; font-size:13px; line-height:1.5; margin-bottom:12px; display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; }
-        .news-card .body .meta {
-            display:flex; justify-content:space-between; align-items:center; font-size:11px; color:#7a7f7c;
-            border-top:1px solid rgba(255,255,255,0.04); padding-top:12px; margin-top:2px;
-        }
-        .news-card .body .meta .date i { margin-right:4px; color:#d7ad45; }
-        .news-card .body .actions { display:flex; gap:6px; }
+/* ══════════════════════════════════════════
+   CARDS / FORMS
+══════════════════════════════════════════ */
+.card{
+  background:linear-gradient(180deg,rgba(139,92,246,.07),rgba(139,92,246,.02));
+  backdrop-filter:blur(14px);
+  border:1px solid var(--border);
+  border-radius:22px;
+  padding:26px 30px;
+  margin-bottom:26px;
+  box-shadow:0 20px 60px rgba(0,0,0,.4);
+}
+.card h3{
+  font-size:20px;font-weight:600;margin-bottom:6px;
+  font-family:'Cormorant Garamond',Georgia,serif;
+  display:flex;align-items:center;gap:10px;
+}
+.card h3 i{color:var(--yellow)}
+.card .sub{color:var(--text-3);font-size:13px;margin-bottom:20px}
 
-        .empty-state {
-            text-align:center; padding:50px 20px; color:#8a8f8c;
-            background:rgba(255,255,255,0.02); border-radius:20px; border:1px dashed rgba(255,255,255,0.06);
-        }
-        .empty-state i { font-size:40px; color:rgba(215,173,69,0.15); margin-bottom:12px; }
-        .empty-state h3 { font-size:18px; font-weight:500; color:#cfd4d1; }
-        .empty-state p { font-size:13px; margin-top:4px; }
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.form-grid .full{grid-column:1 / -1}
+.form-group{display:flex;flex-direction:column;gap:6px}
+.form-group label{
+  font-size:11px;font-weight:700;text-transform:uppercase;
+  letter-spacing:.8px;color:var(--text-2);
+  display:flex;align-items:center;gap:5px;
+}
+.form-group label i{color:var(--yellow)}
+.form-group input,.form-group textarea,.form-group select{
+  background:rgba(10,6,18,.5);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:13px 15px;
+  color:#fff;font-size:14px;outline:none;
+  transition:all .35s var(--ease);
+  font-family:inherit;
+  width:100%;
+}
+.form-group input::placeholder,.form-group textarea::placeholder{color:var(--text-3)}
+.form-group input:focus,.form-group textarea:focus{
+  border-color:var(--yellow);
+  background:rgba(10,6,18,.75);
+  box-shadow:0 0 0 4px rgba(251,191,36,.12);
+}
+.form-group textarea{resize:vertical;min-height:80px}
+.form-group input[type="file"]{
+  padding:10px;cursor:pointer;
+}
+.form-group input[type="file"]::file-selector-button{
+  background:rgba(251,191,36,.12);
+  border:1px solid rgba(251,191,36,.3);
+  border-radius:30px;
+  padding:6px 16px;margin-right:12px;
+  color:var(--yellow);font-weight:700;font-size:12px;
+  cursor:pointer;transition:.3s;
+}
+.form-group input[type="file"]::file-selector-button:hover{
+  background:rgba(251,191,36,.25);
+}
+.form-actions{
+  grid-column:1/-1;
+  display:flex;gap:10px;flex-wrap:wrap;margin-top:6px;
+}
 
-        /* ── MODALS ── */
-        .modal-overlay {
-            position: fixed; inset:0; background:rgba(0,0,0,0.7); backdrop-filter:blur(8px);
-            z-index:999; display:flex; align-items:center; justify-content:center;
-            opacity:0; visibility:hidden; transition:all .3s ease;
-        }
-        .modal-overlay.active { opacity:1; visibility:visible; }
-        .modal {
-            background:#0f1311; border:1px solid rgba(255,255,255,0.08); border-radius:24px;
-            padding:28px 32px; max-width:560px; width:100%; margin:20px;
-            box-shadow:0 30px 80px rgba(0,0,0,0.6); transform:scale(0.95) translateY(16px);
-            transition:transform .3s ease;
-        }
-        .modal-overlay.active .modal { transform:scale(1) translateY(0); }
-        .modal-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; }
-        .modal-header h3 { font-family:Georgia,serif; font-size:22px; font-weight:600; }
-        .modal-header h3 span { color:#d7ad45; }
-        .modal-header h3 i { color:#d7ad45; margin-right:8px; }
-        .modal-close {
-            background:none; border:none; color:#888; font-size:26px; cursor:pointer; transition:.3s;
-        }
-        .modal-close:hover { color:#fff; transform:rotate(90deg); }
-        .modal .form-group { margin-bottom:14px; }
-        .modal .form-actions { margin-top:16px; }
-        .modal .form-actions .btn { width:100%; justify-content:center; }
+/* ══════════════════════════════════════════
+   LIST ITEMS (news/messages/notifications)
+══════════════════════════════════════════ */
+.list-header{
+  display:flex;justify-content:space-between;align-items:center;
+  margin-bottom:16px;flex-wrap:wrap;gap:10px;
+}
+.list-header h2{
+  font-size:20px;font-weight:600;
+  font-family:'Cormorant Garamond',Georgia,serif;
+  display:flex;align-items:center;gap:10px;
+}
+.list-header h2 i{color:var(--yellow)}
+.list-header .count{font-size:13px;color:var(--text-3)}
 
-        /* ── TOAST ── */
-        .toast {
-            position:fixed; bottom:30px; right:30px; z-index:999;
-            background:rgba(10,13,11,0.95); backdrop-filter:blur(16px);
-            border:1px solid rgba(215,173,69,0.2); border-radius:14px;
-            padding:14px 20px; box-shadow:0 20px 60px rgba(0,0,0,0.5);
-            display:flex; align-items:center; gap:12px;
-            transform:translateY(120%); opacity:0; transition:all .4s cubic-bezier(.34,1.56,.64,1);
-            max-width:400px;
-        }
-        .toast.show { transform:translateY(0); opacity:1; }
-        .toast .icon { flex:none; width:36px; height:36px; border-radius:50%; display:grid; place-items:center; background:rgba(215,173,69,0.1); color:#d7ad45; font-size:16px; }
-        .toast .content { flex:1; }
-        .toast .content strong { display:block; font-weight:600; font-size:14px; }
-        .toast .content span { font-size:12px; color:#b0b5b2; }
-        .toast .close-toast { background:none; border:none; color:#666; font-size:18px; cursor:pointer; padding:2px; }
+.list{display:flex;flex-direction:column;gap:10px;max-height:600px;overflow-y:auto;padding-right:4px}
+.item{
+  background:rgba(10,6,18,.5);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:16px;
+  display:flex;gap:14px;
+  transition:all .3s var(--ease);
+  position:relative;
+}
+.item:hover{
+  border-color:var(--border-2);
+  background:rgba(139,92,246,.1);
+  transform:translateX(3px);
+}
+.item.unread{
+  border-left:3px solid var(--yellow);
+  background:rgba(251,191,36,.06);
+}
+.item .thumb{
+  width:64px;height:64px;object-fit:cover;
+  border-radius:12px;flex:none;
+  border:1px solid var(--border-2);
+}
+.item .icon-tile{
+  width:64px;height:64px;flex:none;
+  border-radius:12px;
+  background:linear-gradient(135deg,rgba(139,92,246,.25),rgba(251,191,36,.12));
+  border:1px solid var(--border-2);
+  display:grid;place-items:center;
+  color:var(--yellow);font-size:22px;
+}
+.item .body{flex:1;min-width:0}
+.item .body h4{
+  font-size:15px;font-weight:700;
+  color:#fff;margin-bottom:4px;line-height:1.3;
+}
+.item .body .from{
+  font-size:12px;color:var(--text-2);margin-bottom:6px;
+}
+.item .body .from strong{color:var(--yellow-light)}
+.item .body .from a{color:var(--yellow);text-decoration:underline;text-decoration-color:rgba(251,191,36,.4)}
+.item .body .from a:hover{text-decoration-color:var(--yellow)}
+.item .body p{
+  font-size:13px;color:var(--text-2);line-height:1.55;
+  margin:0;word-break:break-word;
+}
+.item .body .meta{
+  font-size:11px;color:var(--text-3);margin-top:8px;
+  display:flex;gap:12px;flex-wrap:wrap;
+  align-items:center;
+}
+.item .body .meta span{display:inline-flex;align-items:center;gap:4px}
+.item .body .meta i{color:var(--yellow);font-size:11px}
+.item .actions{
+  display:flex;flex-direction:column;gap:6px;flex:none;
+  justify-content:center;
+}
+.item .actions button{
+  width:34px;height:34px;border-radius:10px;
+  border:1px solid var(--border);
+  background:rgba(255,255,255,.04);
+  color:var(--text-2);
+  font-size:12px;
+  display:grid;place-items:center;
+  transition:all .25s var(--ease);
+}
+.item .actions button:hover{
+  background:var(--purple);color:#fff;border-color:var(--purple);
+  transform:scale(1.08);
+}
+.item .actions button.mark:hover{background:var(--green);border-color:var(--green)}
+.item .actions button.reply:hover{background:var(--yellow);color:#0a0612;border-color:var(--yellow)}
+.item .actions button.del:hover{background:var(--red);border-color:var(--red)}
 
-        /* ── RESPONSIVE ── */
-        @media (max-width:1024px) {
-            body { padding-top:90px; }
-            .dashboard-header { padding:10px 20px; }
-            .dashboard-header .brand-text h1 { font-size:20px; }
-            .dashboard-header .brand img { width:40px; height:40px; }
-            .header-actions .datetime { display:none; }
-        }
+/* News grid (smaller cards) */
+.news-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(300px,1fr));
+  gap:20px;
+}
+.news-card{
+  background:linear-gradient(180deg,rgba(139,92,246,.07),rgba(139,92,246,.02));
+  border:1px solid var(--border);
+  border-radius:18px;overflow:hidden;
+  transition:all .4s var(--ease);
+}
+.news-card:hover{
+  border-color:var(--yellow);
+  transform:translateY(-6px);
+  box-shadow:0 25px 60px rgba(0,0,0,.55),0 0 40px var(--yellow-glow);
+}
+.news-card .thumb{
+  width:100%;height:170px;object-fit:cover;
+  background:#111;
+  border-bottom:1px solid var(--border);
+}
+.news-card .body{padding:18px 20px 20px}
+.news-card .body h4{font-size:17px;font-weight:700;margin-bottom:6px;line-height:1.3;color:#fff}
+.news-card .body p{
+  color:var(--text-2);font-size:13px;line-height:1.5;margin-bottom:14px;
+  display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;
+}
+.news-card .body .meta{
+  display:flex;justify-content:space-between;align-items:center;
+  font-size:11px;color:var(--text-3);
+  border-top:1px solid var(--border);
+  padding-top:12px;
+}
+.news-card .body .meta .date{display:inline-flex;align-items:center;gap:5px}
+.news-card .body .meta .date i{color:var(--yellow)}
+.news-card .body .actions{display:flex;gap:6px}
+.news-card .body .actions button{
+  width:32px;height:32px;border-radius:9px;
+  border:1px solid var(--border);
+  background:rgba(255,255,255,.04);
+  color:var(--text-2);font-size:12px;
+  display:grid;place-items:center;
+  transition:all .25s var(--ease);
+}
+.news-card .body .actions button.edit:hover{background:var(--purple);color:#fff;border-color:var(--purple)}
+.news-card .body .actions button.del:hover{background:var(--red);color:#fff;border-color:var(--red)}
 
-        @media (max-width:768px) {
-            body { padding:12px; padding-top:80px; }
-            .form-grid { grid-template-columns:1fr; }
-            .form-card { padding:20px; }
-            .stats-grid { grid-template-columns:1fr 1fr; }
-            .modal { padding:20px; }
-            .welcome-banner { flex-direction:column; align-items:flex-start; }
-            .welcome-banner .stats-mini { margin-left:0; width:100%; justify-content:space-around; }
-            .welcome-banner .greeting { font-size:18px; }
-        }
+/* Empty state */
+.empty{
+  text-align:center;padding:50px 24px;
+  color:var(--text-3);
+  background:rgba(139,92,246,.03);
+  border-radius:20px;
+  border:1px dashed var(--border-2);
+}
+.empty i{font-size:44px;color:rgba(139,92,246,.4);margin-bottom:14px;display:block}
+.empty h3,.empty h4{font-size:17px;font-weight:600;color:var(--text-2);margin-bottom:6px}
+.empty p{font-size:13px;margin:0}
 
-        @media (max-width:480px) {
-            body { padding-top:110px; }
-            .dashboard-header .brand-text h1 { font-size:15px; }
-            .dashboard-header .brand img { width:30px; height:30px; }
-            .btn { font-size:10px; padding:4px 10px; }
-            .btn-sm { padding:3px 8px; font-size:9px; }
-            .stats-grid { grid-template-columns:1fr; }
-            .news-grid { grid-template-columns:1fr; }
-            .form-card { padding:16px; }
-            .welcome-banner .greeting { font-size:16px; }
-            .welcome-banner .stats-mini { flex-wrap:wrap; gap:8px; }
-            .welcome-banner .stats-mini span { font-size:11px; }
-        }
-        ::-webkit-scrollbar { width:5px; }
-        ::-webkit-scrollbar-track { background:transparent; }
-        ::-webkit-scrollbar-thumb { background:#2a2f2c; border-radius:10px; }
-        ::-webkit-scrollbar-thumb:hover { background:#3a3f3c; }
-    </style>
+/* Admin list rows */
+.admin-row{
+  display:flex;justify-content:space-between;align-items:center;
+  background:rgba(10,6,18,.5);
+  padding:12px 16px;border-radius:12px;
+  border:1px solid var(--border);
+  margin-top:8px;
+  transition:all .3s var(--ease);
+}
+.admin-row:hover{border-color:var(--border-2);background:rgba(139,92,246,.08)}
+.admin-row span{
+  display:inline-flex;align-items:center;gap:10px;
+  font-size:13px;color:var(--text);
+}
+.admin-row span i{color:var(--yellow)}
+
+/* ══════════════════════════════════════════
+   MODALS
+══════════════════════════════════════════ */
+.modal-overlay{
+  position:fixed;inset:0;
+  background:rgba(10,6,18,.85);
+  backdrop-filter:blur(16px);
+  z-index:999;
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;visibility:hidden;transition:all .35s var(--ease);
+  padding:20px;
+}
+.modal-overlay.active{opacity:1;visibility:visible}
+.modal{
+  background:#1d1233;
+  border:1px solid var(--border-2);
+  border-radius:24px;
+  padding:28px 32px;
+  max-width:560px;width:100%;
+  max-height:90vh;overflow-y:auto;
+  box-shadow:0 45px 120px rgba(0,0,0,.8),0 0 60px var(--purple-glow);
+  transform:scale(.95) translateY(16px);
+  transition:transform .35s var(--ease);
+}
+.modal-overlay.active .modal{transform:none}
+.modal-header{
+  display:flex;justify-content:space-between;align-items:center;
+  margin-bottom:20px;padding-bottom:16px;
+  border-bottom:1px solid var(--border);
+}
+.modal-header h3{
+  font-family:'Cormorant Garamond',Georgia,serif;
+  font-size:24px;font-weight:600;
+}
+.modal-header h3 i{color:var(--yellow);margin-right:8px}
+.modal-header h3 span{color:var(--yellow-light)}
+.modal-close{
+  width:40px;height:40px;border-radius:50%;
+  background:rgba(139,92,246,.15);
+  border:1px solid var(--border-2);
+  color:var(--purple-light);font-size:22px;
+  display:grid;place-items:center;
+  transition:all .3s var(--ease);
+}
+.modal-close:hover{
+  background:var(--yellow);color:#0a0612;border-color:var(--yellow);
+  transform:rotate(90deg);
+}
+.modal .form-group{margin-bottom:14px}
+.modal .form-actions{
+  display:flex;gap:10px;margin-top:20px;
+}
+.modal .form-actions .btn{flex:1;justify-content:center}
+
+/* Message view modal */
+.msg-view .msg-header{
+  background:rgba(139,92,246,.08);
+  padding:16px;border-radius:14px;
+  border:1px solid var(--border);
+  margin-bottom:16px;
+}
+.msg-view .msg-header h4{
+  font-size:16px;font-weight:700;color:#fff;margin-bottom:8px;
+}
+.msg-view .msg-header .from{
+  font-size:13px;color:var(--text-2);
+  display:flex;align-items:center;gap:8px;flex-wrap:wrap;
+}
+.msg-view .msg-header .from strong{color:var(--yellow)}
+.msg-view .msg-body{
+  background:rgba(10,6,18,.5);
+  padding:18px;border-radius:14px;
+  border:1px solid var(--border);
+  color:var(--text-2);line-height:1.8;font-size:14px;
+  white-space:pre-wrap;word-break:break-word;
+}
+
+/* ══════════════════════════════════════════
+   TOAST
+══════════════════════════════════════════ */
+.toast{
+  position:fixed;bottom:30px;right:30px;z-index:9999;
+  background:linear-gradient(135deg,var(--purple-dark),var(--bg-3));
+  backdrop-filter:blur(20px);
+  border:1px solid var(--border-2);
+  border-radius:16px;
+  padding:16px 20px;
+  box-shadow:0 25px 60px rgba(0,0,0,.6),0 0 30px var(--purple-glow);
+  display:flex;align-items:center;gap:14px;
+  transform:translateY(140%);opacity:0;
+  transition:all .45s cubic-bezier(.34,1.56,.64,1);
+  max-width:420px;
+}
+.toast.show{transform:translateY(0);opacity:1}
+.toast.success{border-color:rgba(16,185,129,.5);box-shadow:0 25px 60px rgba(0,0,0,.6),0 0 30px rgba(16,185,129,.3)}
+.toast.error{border-color:rgba(239,68,68,.5);box-shadow:0 25px 60px rgba(0,0,0,.6),0 0 30px rgba(239,68,68,.3)}
+.toast .icon{
+  flex:none;width:40px;height:40px;border-radius:50%;
+  display:grid;place-items:center;
+  background:linear-gradient(135deg,var(--yellow),var(--yellow-light));
+  color:#0a0612;font-size:16px;
+}
+.toast.success .icon{background:linear-gradient(135deg,#10b981,#059669);color:#fff}
+.toast.error .icon{background:linear-gradient(135deg,#ef4444,#b91c1c);color:#fff}
+.toast .content{flex:1;min-width:0}
+.toast .content strong{display:block;font-weight:700;font-size:14px;color:#fff;margin-bottom:2px}
+.toast .content span{font-size:12px;color:var(--text-2);display:block;overflow:hidden;text-overflow:ellipsis}
+.toast .close-toast{
+  color:var(--text-3);font-size:20px;padding:4px;
+  transition:color .2s;
+}
+.toast .close-toast:hover{color:#fff}
+
+/* ══════════════════════════════════════════
+   RESPONSIVE
+══════════════════════════════════════════ */
+@media (max-width:1024px){
+  body{padding-top:100px}
+  .dashboard-header{padding:12px 20px}
+  .brand-text h1{font-size:20px}
+  .brand img{width:42px;height:42px}
+  .datetime{display:none}
+}
+@media (max-width:900px){
+  .form-grid{grid-template-columns:1fr}
+  .tabs{flex-direction:column}
+  .tab{min-width:0}
+}
+@media (max-width:768px){
+  body{padding:14px;padding-top:90px}
+  .dashboard-header{padding:12px 18px;flex-wrap:nowrap;gap:10px}
+  .header-actions{display:none}
+  .hamburger-btn{display:block;margin-left:auto;order:3}
+  .brand-text h1{font-size:18px}
+  .brand img{width:38px;height:38px}
+  .mobile-menu{display:none;order:4;flex-basis:100%}
+  .mobile-menu.open{display:flex}
+  .welcome-banner{flex-direction:column;align-items:flex-start}
+  .welcome-banner .stats-mini{margin-left:0;width:100%;justify-content:space-around}
+  .welcome-banner .greeting{font-size:18px}
+  .card{padding:20px}
+  .modal{padding:22px}
+  .item{flex-wrap:wrap}
+  .item .actions{flex-direction:row;width:100%;justify-content:flex-end}
+  .toast{left:14px;right:14px;bottom:20px;max-width:none}
+}
+@media (max-width:480px){
+  body{padding-top:96px}
+  .brand-text h1{font-size:15px}
+  .brand-text small{font-size:9px}
+  .brand img{width:32px;height:32px}
+  .btn{font-size:11px;padding:8px 14px}
+  .stats-grid{grid-template-columns:1fr}
+  .news-grid{grid-template-columns:1fr}
+  .card{padding:16px}
+  .welcome-banner .greeting{font-size:16px}
+  .stat-card .stat-value{font-size:26px}
+}
+</style>
 </head>
 <body>
 
-    <!-- ─── GLASS HEADER ─── -->
-    <header class="dashboard-header">
-        <div class="brand">
-            <img src="3.jpeg" alt="Hyssop Choir Logo" />
-        
-        </div>
+<!-- ══════════════════ HEADER ══════════════════ -->
+<header class="dashboard-header">
+  <div class="brand">
+    <img src="3.jpeg" alt="Hyssop Choir Logo" />
+    <div class="brand-text">
+      <h1>HYSSOP <span>ADMIN</span></h1>
+      <small>Control Panel</small>
+    </div>
+  </div>
 
-        <button class="hamburger-btn" id="hamburgerToggle" aria-label="Toggle menu">
-            <i class="fa-solid fa-bars"></i>
+  <button class="hamburger-btn" id="hamburgerToggle" aria-label="Toggle menu">
+    <i class="fa-solid fa-bars"></i>
+  </button>
+
+  <div class="header-actions">
+    <div class="datetime" id="datetimeDisplay"><i class="fa-regular fa-clock"></i> Loading...</div>
+    <div class="user-badge">
+      <i class="fa-regular fa-user-circle"></i>
+      <span id="usernameDisplay">Admin</span>
+    </div>
+    <button class="btn btn-outline btn-sm" id="changeUsernameBtn">
+      <i class="fa-regular fa-user-pen"></i> Username
+    </button>
+    <button class="btn btn-outline btn-sm" id="changePwBtn">
+      <i class="fa-regular fa-key"></i> Password
+    </button>
+    <button class="btn btn-danger btn-sm" id="logoutBtn">
+      <i class="fa-solid fa-right-from-bracket"></i> Logout
+    </button>
+  </div>
+
+  <div class="mobile-menu" id="mobileMenu">
+    <div class="user-badge" style="justify-content:center">
+      <i class="fa-regular fa-user-circle"></i>
+      <span id="mobileUsernameDisplay">Admin</span>
+    </div>
+    <button class="btn btn-outline" id="mobileChangeUsernameBtn">
+      <i class="fa-regular fa-user-pen"></i> Username
+    </button>
+    <button class="btn btn-outline" id="mobileChangePwBtn">
+      <i class="fa-regular fa-key"></i> Password
+    </button>
+    <button class="btn btn-danger" id="mobileLogoutBtn">
+      <i class="fa-solid fa-right-from-bracket"></i> Logout
+    </button>
+  </div>
+</header>
+
+<!-- ══════════════════ MAIN ══════════════════ -->
+<div class="container">
+
+  <!-- WELCOME BANNER -->
+  <div class="welcome-banner">
+    <div class="greeting">
+      <i class="fa-regular fa-hand-peace"></i>
+      Welcome, <span id="greetingName">Admin</span>
+      <span class="typewriter" id="typewriterText"></span>
+    </div>
+    <div class="stats-mini">
+      <span><i class="fa-regular fa-newspaper" style="color:var(--yellow)"></i> <strong id="miniTotal">0</strong> news</span>
+      <span><i class="fa-regular fa-envelope" style="color:var(--yellow)"></i> <strong id="miniMsgs">0</strong> messages</span>
+    </div>
+  </div>
+
+  <!-- TABS -->
+  <div class="tabs">
+    <button class="tab active" data-tab="news">
+      <i class="fa-regular fa-newspaper"></i> News
+    </button>
+    <button class="tab" data-tab="messages">
+      <i class="fa-regular fa-envelope"></i> Messages
+      <span class="badge" id="msgBadge" data-count="0">0</span>
+    </button>
+    <button class="tab" data-tab="notifications">
+      <i class="fa-regular fa-bell"></i> Notifications
+    </button>
+    <button class="tab" data-tab="admins">
+      <i class="fa-regular fa-users"></i> Admins
+    </button>
+  </div>
+
+  <!-- ═══════════════════════════════════
+       TAB: NEWS
+  ═══════════════════════════════════ -->
+  <div class="tab-panel active" id="panel-news">
+
+    <!-- STATS -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-label"><i class="fa-regular fa-newspaper"></i> Total News</div>
+        <div class="stat-value" id="totalNews">0</div>
+        <div class="stat-sub">Published articles</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label"><i class="fa-regular fa-calendar-days"></i> Latest Post</div>
+        <div class="stat-value" id="latestDate">—</div>
+        <div class="stat-sub">Most recent</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label"><i class="fa-regular fa-image"></i> With Images</div>
+        <div class="stat-value" id="withImages">0</div>
+        <div class="stat-sub">Visual content</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label"><i class="fa-regular fa-envelope"></i> Messages</div>
+        <div class="stat-value" id="totalMsgs">0</div>
+        <div class="stat-sub">Contact requests</div>
+      </div>
+    </div>
+
+    <!-- PUBLISH FORM -->
+    <div class="card">
+      <h3><i class="fa-regular fa-pen-to-square"></i> Publish News</h3>
+      <p class="sub">Write a short summary for the homepage and a full article for the detail view.</p>
+      <form id="newsForm" enctype="multipart/form-data">
+        <div class="form-grid">
+          <div class="form-group full">
+            <label for="title"><i class="fa-regular fa-heading"></i> Title</label>
+            <input type="text" id="title" name="title" placeholder="Compelling title..." required />
+          </div>
+          <div class="form-group full">
+            <label for="content"><i class="fa-regular fa-align-left"></i> Short Summary</label>
+            <textarea id="content" name="content" placeholder="Brief summary shown on homepage" rows="2" required></textarea>
+          </div>
+          <div class="form-group full">
+            <label for="fullContent"><i class="fa-regular fa-align-justify"></i> Full Content (detailed)</label>
+            <textarea id="fullContent" name="full_content" placeholder="Full article – appears when user clicks 'Read More'" rows="4"></textarea>
+          </div>
+          <div class="form-group full">
+            <label for="image"><i class="fa-regular fa-image"></i> Featured Image (optional)</label>
+            <input type="file" id="image" name="image" accept="image/*" />
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary">
+              <i class="fa-regular fa-paper-plane"></i> Publish
+            </button>
+            <button type="reset" class="btn btn-outline btn-sm">
+              <i class="fa-regular fa-rotate-right"></i> Reset
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <!-- NEWS LIST -->
+    <div class="list-header">
+      <h2><i class="fa-regular fa-list"></i> All News</h2>
+      <span class="count" id="newsCount">0 items</span>
+    </div>
+    <div id="newsContainer">
+      <div class="empty">
+        <i class="fa-regular fa-newspaper"></i>
+        <h3>No news yet</h3>
+        <p>Publish your first update above.</p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ═══════════════════════════════════
+       TAB: MESSAGES  ← NEW
+  ═══════════════════════════════════ -->
+  <div class="tab-panel" id="panel-messages">
+
+    <div class="list-header">
+      <h2><i class="fa-regular fa-envelope"></i> Contact Messages</h2>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn btn-outline btn-sm" id="btnAllReadMsgs">
+          <i class="fa-solid fa-check-double"></i> Mark all read
         </button>
-
-        <div class="header-actions" id="desktopActions">
-            <div class="datetime" id="datetimeDisplay"><i class="fa-regular fa-clock"></i> Loading...</div>
-            <div class="user-badge">
-                <i class="fa-regular fa-user-circle"></i>
-                <span id="usernameDisplay">Admin</span>
-            </div>
-            <button class="btn btn-outline btn-sm" id="changeUsernameBtn">
-                <i class="fa-regular fa-user-pen"></i> Username
-            </button>
-            <button class="btn btn-outline btn-sm" id="changePwBtn">
-                <i class="fa-regular fa-key"></i> Password
-            </button>
-            <button class="btn btn-outline btn-sm" id="logoutBtn">
-                <i class="fa-solid fa-right-from-bracket"></i> Logout
-            </button>
-        </div>
-
-        <div class="mobile-menu" id="mobileMenu">
-            <div class="user-badge">
-                <i class="fa-regular fa-user-circle"></i>
-                <span id="mobileUsernameDisplay">Admin</span>
-            </div>
-            <button class="btn btn-outline btn-sm" id="mobileChangeUsernameBtn">
-                <i class="fa-regular fa-user-pen"></i> Username
-            </button>
-            <button class="btn btn-outline btn-sm" id="mobileChangePwBtn">
-                <i class="fa-regular fa-key"></i> Password
-            </button>
-            <button class="btn btn-outline btn-sm" id="mobileLogoutBtn">
-                <i class="fa-solid fa-right-from-bracket"></i> Logout
-            </button>
-        </div>
-    </header>
-
-    <!-- ─── MAIN CONTENT ─── -->
-    <div class="container">
-
-        <!-- WELCOME BANNER -->
-        <div class="welcome-banner">
-            <div class="greeting">
-                <i class="fa-regular fa-hand-peace" style="color:#d7ad45; margin-right:10px;"></i>
-                Welcome, <span id="greetingName">Admin</span>
-                <span class="typewriter" id="typewriterText"></span>
-            </div>
-            <div class="stats-mini">
-                <span><i class="fa-regular fa-newspaper" style="color:#d7ad45;"></i> <strong id="miniTotal">0</strong> news</span>
-                <span><i class="fa-regular fa-image" style="color:#d7ad45;"></i> <strong id="miniImages">0</strong> images</span>
-            </div>
-        </div>
-
-        <!-- STATS -->
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-label"><i class="fa-regular fa-newspaper"></i> Total News</div>
-                <div class="stat-value" id="totalNews">0</div>
-                <div class="stat-sub">Published articles</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-label"><i class="fa-regular fa-calendar-days"></i> Latest Post</div>
-                <div class="stat-value" id="latestDate">—</div>
-                <div class="stat-sub">Most recent</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-label"><i class="fa-regular fa-image"></i> With Images</div>
-                <div class="stat-value" id="withImages">0</div>
-                <div class="stat-sub">Visual content</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-label"><i class="fa-regular fa-clock"></i> Activity</div>
-                <div class="stat-value" id="lastActivity">—</div>
-                <div class="stat-sub">Latest action</div>
-            </div>
-        </div>
-
-        <!-- CREATE FORM -->
-        <div class="form-card">
-            <h3><i class="fa-regular fa-pen-to-square"></i> Publish News</h3>
-            <p class="sub">Write a short summary for the homepage and a full article for the detail view.</p>
-            <form id="newsForm" enctype="multipart/form-data">
-                <div class="form-grid">
-                    <div class="form-group full">
-                        <label for="title"><i class="fa-regular fa-heading"></i> Title</label>
-                        <input type="text" id="title" name="title" placeholder="Compelling title..." required />
-                    </div>
-                    <div class="form-group full">
-                        <label for="content"><i class="fa-regular fa-align-left"></i> Short Summary</label>
-                        <textarea id="content" name="content" placeholder="Brief summary shown on homepage" rows="2" required></textarea>
-                    </div>
-                    <div class="form-group full">
-                        <label for="fullContent"><i class="fa-regular fa-align-justify"></i> Full Content (detailed)</label>
-                        <textarea id="fullContent" name="full_content" placeholder="Full article – appears when user clicks 'Read More'" rows="4"></textarea>
-                    </div>
-                    <div class="form-group full">
-                        <label for="image"><i class="fa-regular fa-image"></i> Featured Image (optional)</label>
-                        <input type="file" id="image" name="image" accept="image/*" />
-                    </div>
-                    <div class="form-actions">
-                        <button type="submit" class="btn btn-primary"><i class="fa-regular fa-paper-plane"></i> Publish</button>
-                        <button type="reset" class="btn btn-outline btn-sm"><i class="fa-regular fa-rotate-right"></i> Reset</button>
-                    </div>
-                </div>
-            </form>
-        </div>
-
-        <!-- NEWS LIST -->
-        <div class="news-section-header">
-            <h2><i class="fa-regular fa-list"></i> All News</h2>
-            <span style="font-size:13px;color:#8a8f8c;" id="newsCount">0 items</span>
-        </div>
-        <div id="newsContainer">
-            <div class="empty-state">
-                <i class="fa-regular fa-newspaper"></i>
-                <h3>No news yet</h3>
-                <p>Publish your first update above.</p>
-            </div>
-        </div>
-
-        <!-- MANAGE ADMINS -->
-        <div class="form-card" style="margin-top:32px;">
-            <h3><i class="fa-regular fa-user-plus"></i> Manage Admins</h3>
-            <p class="sub">Create or remove admin accounts.</p>
-            <form id="createAdminForm" style="margin-bottom:16px;">
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label for="newAdminUsername"><i class="fa-regular fa-user"></i> Username</label>
-                        <input type="text" id="newAdminUsername" placeholder="New admin username" required />
-                    </div>
-                    <div class="form-group">
-                        <label for="newAdminPassword"><i class="fa-regular fa-lock"></i> Password</label>
-                        <input type="password" id="newAdminPassword" placeholder="Min 6 characters" required />
-                    </div>
-                    <div class="form-actions" style="grid-column:1/-1;">
-                        <button type="submit" class="btn btn-primary"><i class="fa-regular fa-user-plus"></i> Create Admin</button>
-                    </div>
-                </div>
-            </form>
-            <div id="adminList">
-                <div class="empty-state" style="padding:16px;">
-                    <i class="fa-regular fa-users"></i>
-                    <h4 style="margin:6px 0;font-size:16px;">Loading admins...</h4>
-                </div>
-            </div>
-        </div>
-
+        <button class="btn btn-danger btn-sm" id="btnClearMsgs">
+          <i class="fa-solid fa-trash"></i> Clear all
+        </button>
+      </div>
     </div>
 
-    <!-- ─── EDIT MODAL ─── -->
-    <div class="modal-overlay" id="editModal">
-        <div class="modal">
-            <div class="modal-header">
-                <h3><i class="fa-regular fa-pen-to-square"></i> Edit <span>News</span></h3>
-                <button class="modal-close" id="modalClose">&times;</button>
+    <div class="list" id="msgList">
+      <div class="empty">
+        <i class="fa-regular fa-envelope"></i>
+        <h3>Loading messages...</h3>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ═══════════════════════════════════
+       TAB: NOTIFICATIONS
+  ═══════════════════════════════════ -->
+  <div class="tab-panel" id="panel-notifications">
+
+    <div class="list-header">
+      <h2><i class="fa-regular fa-bell"></i> Notifications</h2>
+      <span class="count" id="notifCount">0 items</span>
+    </div>
+
+    <div class="list" id="notifList">
+      <div class="empty">
+        <i class="fa-regular fa-bell"></i>
+        <h3>Loading notifications...</h3>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ═══════════════════════════════════
+       TAB: ADMINS
+  ═══════════════════════════════════ -->
+  <div class="tab-panel" id="panel-admins">
+
+    <div class="card">
+      <h3><i class="fa-regular fa-user-plus"></i> Add New Admin</h3>
+      <p class="sub">Create an admin account for a trusted team member.</p>
+      <form id="createAdminForm">
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="newAdminUsername"><i class="fa-regular fa-user"></i> Username</label>
+            <input type="text" id="newAdminUsername" placeholder="New admin username" required />
+          </div>
+          <div class="form-group">
+            <label for="newAdminPassword"><i class="fa-regular fa-lock"></i> Password</label>
+            <input type="password" id="newAdminPassword" placeholder="Min 6 characters" required />
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary">
+              <i class="fa-regular fa-user-plus"></i> Create Admin
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <div class="card">
+      <h3><i class="fa-regular fa-users"></i> Existing Admins</h3>
+      <p class="sub">All accounts with dashboard access.</p>
+      <div id="adminList">
+        <div class="empty">
+          <i class="fa-regular fa-users"></i>
+          <h3>Loading admins...</h3>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<!-- ══════════════════ EDIT NEWS MODAL ══════════════════ -->
+<div class="modal-overlay" id="editModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3><i class="fa-regular fa-pen-to-square"></i> Edit <span>News</span></h3>
+      <button class="modal-close" id="modalClose">&times;</button>
+    </div>
+    <form id="editForm" enctype="multipart/form-data">
+      <input type="hidden" id="editId" name="id" />
+      <div class="form-group">
+        <label for="editTitle"><i class="fa-regular fa-heading"></i> Title</label>
+        <input type="text" id="editTitle" name="title" placeholder="Title" required />
+      </div>
+      <div class="form-group">
+        <label for="editContent"><i class="fa-regular fa-align-left"></i> Short Summary</label>
+        <textarea id="editContent" name="content" placeholder="Short summary" rows="2" required></textarea>
+      </div>
+      <div class="form-group">
+        <label for="editFullContent"><i class="fa-regular fa-align-justify"></i> Full Content</label>
+        <textarea id="editFullContent" name="full_content" placeholder="Full article" rows="4"></textarea>
+      </div>
+      <div class="form-group">
+        <label for="editImage"><i class="fa-regular fa-image"></i> Change Image (optional)</label>
+        <input type="file" id="editImage" name="image" accept="image/*" />
+        <span style="font-size:11px;color:var(--text-3);margin-top:3px;">Leave empty to keep current.</span>
+      </div>
+      <div class="form-actions">
+        <button type="submit" class="btn btn-success">
+          <i class="fa-regular fa-floppy-disk"></i> Update
+        </button>
+        <button type="button" class="btn btn-outline btn-sm" id="modalCancel">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ══════════════════ VIEW MESSAGE MODAL ══════════════════ -->
+<div class="modal-overlay" id="msgViewModal">
+  <div class="modal msg-view">
+    <div class="modal-header">
+      <h3><i class="fa-regular fa-envelope-open"></i> Message</h3>
+      <button class="modal-close" id="msgViewClose">&times;</button>
+    </div>
+    <div class="msg-header">
+      <h4 id="msgViewSubject">Subject</h4>
+      <div class="from">
+        <span><i class="fa-regular fa-user" style="color:var(--yellow)"></i> <strong id="msgViewName">Name</strong></span>
+        <span><i class="fa-regular fa-envelope" style="color:var(--yellow)"></i> <a id="msgViewEmail" href="#">email</a></span>
+        <span><i class="fa-regular fa-clock" style="color:var(--yellow)"></i> <span id="msgViewDate"></span></span>
+      </div>
+    </div>
+    <div class="msg-body" id="msgViewBody">Message body</div>
+    <div class="form-actions">
+      <a class="btn btn-primary" id="msgViewReply">
+        <i class="fa-solid fa-reply"></i> Reply by Email
+      </a>
+      <button type="button" class="btn btn-outline" id="msgViewMark">
+        <i class="fa-solid fa-check"></i> Mark as Read
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════ CHANGE PASSWORD MODAL ══════════════════ -->
+<div class="modal-overlay" id="changePwModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3><i class="fa-regular fa-key"></i> Change <span>Password</span></h3>
+      <button class="modal-close" id="changePwClose">&times;</button>
+    </div>
+    <form id="changePwForm">
+      <div class="form-group">
+        <label for="currentPassword"><i class="fa-regular fa-lock"></i> Current Password</label>
+        <input type="password" id="currentPassword" placeholder="Current password" required />
+      </div>
+      <div class="form-group">
+        <label for="newPassword"><i class="fa-regular fa-lock"></i> New Password</label>
+        <input type="password" id="newPassword" placeholder="New (min 6 chars)" required />
+      </div>
+      <div class="form-group">
+        <label for="confirmPassword"><i class="fa-regular fa-check-double"></i> Confirm New</label>
+        <input type="password" id="confirmPassword" placeholder="Confirm new" required />
+      </div>
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">
+          <i class="fa-regular fa-floppy-disk"></i> Update
+        </button>
+        <button type="button" class="btn btn-outline btn-sm" id="changePwCancel">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ══════════════════ CHANGE USERNAME MODAL ══════════════════ -->
+<div class="modal-overlay" id="changeUsernameModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3><i class="fa-regular fa-user-pen"></i> Change <span>Username</span></h3>
+      <button class="modal-close" id="changeUsernameClose">&times;</button>
+    </div>
+    <form id="changeUsernameForm">
+      <div class="form-group">
+        <label for="newUsername"><i class="fa-regular fa-user"></i> New Username</label>
+        <input type="text" id="newUsername" placeholder="Enter new username" required />
+        <small style="color:var(--text-3);font-size:11px;margin-top:4px;">Unique, at least 3 characters.</small>
+      </div>
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">
+          <i class="fa-regular fa-floppy-disk"></i> Update
+        </button>
+        <button type="button" class="btn btn-outline btn-sm" id="changeUsernameCancel">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ══════════════════ TOAST ══════════════════ -->
+<div class="toast" id="toast">
+  <div class="icon"><i class="fa-regular fa-circle-check"></i></div>
+  <div class="content">
+    <strong id="toastTitle">Success</strong>
+    <span id="toastMessage">Done.</span>
+  </div>
+  <button class="close-toast" id="toastClose">&times;</button>
+</div>
+
+<script>
+/* ══════════════════════════════════════════
+   DOM REFS
+══════════════════════════════════════════ */
+const $ = id => document.getElementById(id);
+
+const newsContainer = $('newsContainer');
+const totalNewsEl = $('totalNews');
+const latestDateEl = $('latestDate');
+const withImagesEl = $('withImages');
+const totalMsgsEl = $('totalMsgs');
+const newsCountEl = $('newsCount');
+const usernameDisplay = $('usernameDisplay');
+const greetingName = $('greetingName');
+const miniTotal = $('miniTotal');
+const miniMsgs = $('miniMsgs');
+const mobileUsernameDisplay = $('mobileUsernameDisplay');
+const msgBadge = $('msgBadge');
+const msgList = $('msgList');
+const notifList = $('notifList');
+const notifCount = $('notifCount');
+
+/* ══════════════════════════════════════════
+   TOAST
+══════════════════════════════════════════ */
+function showToast(title, message, type = 'success'){
+  const toast = $('toast');
+  $('toastTitle').textContent = title;
+  $('toastMessage').textContent = message;
+  toast.className = 'toast show ' + type;
+  const icon = toast.querySelector('.icon i');
+  icon.className = type === 'error'
+    ? 'fa-regular fa-circle-xmark'
+    : type === 'success'
+      ? 'fa-regular fa-circle-check'
+      : 'fa-regular fa-bell';
+  clearTimeout(toast._t);
+  toast._t = setTimeout(() => toast.classList.remove('show'), 4000);
+}
+$('toastClose').addEventListener('click', () => $('toast').classList.remove('show'));
+
+/* ══════════════════════════════════════════
+   HAMBURGER
+══════════════════════════════════════════ */
+const hamburgerBtn = $('hamburgerToggle');
+const mobileMenu = $('mobileMenu');
+hamburgerBtn.addEventListener('click', function(e){
+  e.stopPropagation();
+  mobileMenu.classList.toggle('open');
+  this.querySelector('i').className = mobileMenu.classList.contains('open')
+    ? 'fa-solid fa-xmark' : 'fa-solid fa-bars';
+});
+document.addEventListener('click', function(e){
+  if(!e.target.closest('.dashboard-header')){
+    mobileMenu.classList.remove('open');
+    hamburgerBtn.querySelector('i').className = 'fa-solid fa-bars';
+  }
+});
+
+/* ══════════════════════════════════════════
+   TABS
+══════════════════════════════════════════ */
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    tab.classList.add('active');
+    const panel = $('panel-' + tab.dataset.tab);
+    if(panel) panel.classList.add('active');
+
+    // Refresh panel content when opened
+    if(tab.dataset.tab === 'messages') loadMessages();
+    if(tab.dataset.tab === 'notifications') loadNotifs();
+  });
+});
+
+/* ══════════════════════════════════════════
+   MODALS
+══════════════════════════════════════════ */
+function setupModal(modalEl, openFn, closeFn, openers, closers){
+  openers.forEach(el => el && el.addEventListener('click', openFn));
+  closers.forEach(el => el && el.addEventListener('click', closeFn));
+  modalEl.addEventListener('click', e => { if(e.target === modalEl) closeFn(); });
+}
+
+/* Edit News modal */
+const editModal = $('editModal');
+function openEditModal(item){
+  $('editId').value = item.id;
+  $('editTitle').value = item.title || '';
+  $('editContent').value = item.content || '';
+  $('editFullContent').value = item.full_content || item.content || '';
+  $('editImage').value = '';
+  editModal.classList.add('active');
+}
+function closeEditModal(){ editModal.classList.remove('active'); }
+setupModal(editModal, openEditModal, closeEditModal, [], [$('modalClose'), $('modalCancel')]);
+
+/* Change Password modal */
+const pwModal = $('changePwModal');
+function openPwModal(){
+  $('currentPassword').value = '';
+  $('newPassword').value = '';
+  $('confirmPassword').value = '';
+  pwModal.classList.add('active');
+}
+function closePwModal(){ pwModal.classList.remove('active'); }
+setupModal(pwModal, openPwModal, closePwModal,
+  [$('changePwBtn'), $('mobileChangePwBtn')],
+  [$('changePwClose'), $('changePwCancel')]);
+
+/* Change Username modal */
+const unameModal = $('changeUsernameModal');
+function openUnameModal(){
+  $('newUsername').value = '';
+  unameModal.classList.add('active');
+}
+function closeUnameModal(){ unameModal.classList.remove('active'); }
+setupModal(unameModal, openUnameModal, closeUnameModal,
+  [$('changeUsernameBtn'), $('mobileChangeUsernameBtn')],
+  [$('changeUsernameClose'), $('changeUsernameCancel')]);
+
+/* Message view modal */
+const msgViewModal = $('msgViewModal');
+function closeMsgView(){ msgViewModal.classList.remove('active'); }
+setupModal(msgViewModal, ()=>{}, closeMsgView, [], [$('msgViewClose')]);
+
+/* ══════════════════════════════════════════
+   SESSION
+══════════════════════════════════════════ */
+async function checkSession(){
+  try{
+    const res = await fetch('/api/session');
+    const data = await res.json();
+    if(!data.loggedIn){ window.location.href = '/admin/login.html'; return; }
+    const uname = data.user?.username || 'Admin';
+    usernameDisplay.textContent = uname;
+    greetingName.textContent = uname;
+    mobileUsernameDisplay.textContent = uname;
+  }catch{
+    window.location.href = '/admin/login.html';
+  }
+}
+checkSession();
+
+/* ══════════════════════════════════════════
+   TYPEWRITER
+══════════════════════════════════════════ */
+(function typeWriter(){
+  const texts = ['Ready to update?', 'Share the good news!', 'Inspire faith.', 'Worship in action.'];
+  let index = 0, charIndex = 0, isDeleting = false;
+  const el = $('typewriterText');
+  function type(){
+    const full = texts[index];
+    if(isDeleting){
+      el.textContent = full.substring(0, charIndex--);
+      if(charIndex < 0){ isDeleting = false; index = (index+1)%texts.length; setTimeout(type, 500); return; }
+      setTimeout(type, 30);
+    } else {
+      el.textContent = full.substring(0, charIndex++);
+      if(charIndex > full.length){ isDeleting = true; setTimeout(type, 1800); return; }
+      setTimeout(type, 60);
+    }
+  }
+  type();
+})();
+
+/* ══════════════════════════════════════════
+   HELPERS
+══════════════════════════════════════════ */
+function esc(str){
+  return String(str ?? '').replace(/[&<>"']/g, c => ({
+    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+  }[c]));
+}
+function fmtDate(d, long = false){
+  if(!d) return '—';
+  const dt = new Date(d);
+  return dt.toLocaleDateString('en-US', long
+    ? { year:'numeric', month:'long', day:'numeric' }
+    : { year:'numeric', month:'short', day:'numeric' });
+}
+function fmtDateTime(d){
+  if(!d) return '—';
+  return new Date(d).toLocaleString('en-US', {
+    year:'numeric',month:'short',day:'numeric',
+    hour:'2-digit',minute:'2-digit'
+  });
+}
+
+/* ══════════════════════════════════════════
+   NEWS
+══════════════════════════════════════════ */
+async function loadNews(){
+  try{
+    const res = await fetch('/api/news');
+    const news = await res.json();
+
+    totalNewsEl.textContent = news.length;
+    newsCountEl.textContent = news.length + (news.length === 1 ? ' item' : ' items');
+    miniTotal.textContent = news.length;
+
+    const withImg = news.filter(n => n.image_url).length;
+    withImagesEl.textContent = withImg;
+
+    if(news.length > 0){
+      latestDateEl.textContent = fmtDate(news[0].created_at);
+    } else {
+      latestDateEl.textContent = '—';
+    }
+
+    if(!news.length){
+      newsContainer.innerHTML = `
+        <div class="empty">
+          <i class="fa-regular fa-newspaper"></i>
+          <h3>No news yet</h3>
+          <p>Publish your first update above.</p>
+        </div>`;
+      return;
+    }
+
+    let html = '<div class="news-grid">';
+    news.forEach(item => {
+      const title = esc(item.title || 'Untitled');
+      const content = esc(item.content || 'No content.');
+      const imgHtml = item.image_url
+        ? `<img class="thumb" src="${esc(item.image_url)}" alt="${title}" />`
+        : '';
+      html += `
+        <div class="news-card">
+          ${imgHtml}
+          <div class="body">
+            <h4>${title}</h4>
+            <p>${content}</p>
+            <div class="meta">
+              <span class="date"><i class="fa-regular fa-calendar"></i> ${fmtDate(item.created_at)}</span>
+              <div class="actions">
+                <button class="edit edit-btn" data-id="${item.id}" title="Edit">
+                  <i class="fa-regular fa-pen-to-square"></i>
+                </button>
+                <button class="del delete-btn" data-id="${item.id}" title="Delete">
+                  <i class="fa-regular fa-trash-can"></i>
+                </button>
+              </div>
             </div>
-            <form id="editForm" enctype="multipart/form-data">
-                <input type="hidden" id="editId" name="id" />
-                <div class="form-group">
-                    <label for="editTitle"><i class="fa-regular fa-heading"></i> Title</label>
-                    <input type="text" id="editTitle" name="title" placeholder="Title" required />
-                </div>
-                <div class="form-group">
-                    <label for="editContent"><i class="fa-regular fa-align-left"></i> Short Summary</label>
-                    <textarea id="editContent" name="content" placeholder="Short summary" rows="2" required></textarea>
-                </div>
-                <div class="form-group">
-                    <label for="editFullContent"><i class="fa-regular fa-align-justify"></i> Full Content</label>
-                    <textarea id="editFullContent" name="full_content" placeholder="Full article" rows="4"></textarea>
-                </div>
-                <div class="form-group">
-                    <label for="editImage"><i class="fa-regular fa-image"></i> Change Image (optional)</label>
-                    <input type="file" id="editImage" name="image" accept="image/*" />
-                    <span style="font-size:11px;color:#666;margin-top:3px;">Leave empty to keep current.</span>
-                </div>
-                <div class="form-actions">
-                    <button type="submit" class="btn btn-success"><i class="fa-regular fa-floppy-disk"></i> Update</button>
-                    <button type="button" class="btn btn-outline btn-sm" id="modalCancel">Cancel</button>
-                </div>
-            </form>
-        </div>
-    </div>
+          </div>
+        </div>`;
+    });
+    html += '</div>';
+    newsContainer.innerHTML = html;
 
-    <!-- ─── CHANGE PASSWORD MODAL ─── -->
-    <div class="modal-overlay" id="changePwModal">
-        <div class="modal">
-            <div class="modal-header">
-                <h3><i class="fa-regular fa-key"></i> Change <span>Password</span></h3>
-                <button class="modal-close" id="changePwClose">&times;</button>
+    document.querySelectorAll('.edit-btn').forEach(btn => {
+      btn.addEventListener('click', e => {
+        e.stopPropagation();
+        const id = parseInt(btn.dataset.id);
+        const item = news.find(n => n.id === id);
+        if(item) openEditModal(item);
+      });
+    });
+    document.querySelectorAll('.delete-btn').forEach(btn => {
+      btn.addEventListener('click', async e => {
+        e.stopPropagation();
+        const id = btn.dataset.id;
+        if(!confirm('Delete this news?')) return;
+        try{
+          const res = await fetch('/api/news/' + id, { method:'DELETE' });
+          if(res.ok){ showToast('Deleted', 'News removed.'); loadNews(); }
+          else showToast('Error', 'Could not delete.', 'error');
+        }catch{ showToast('Error', 'Network error.', 'error'); }
+      });
+    });
+  }catch(err){
+    console.error(err);
+    newsContainer.innerHTML = `
+      <div class="empty">
+        <i class="fa-regular fa-circle-xmark"></i>
+        <h3>Failed to load</h3>
+        <p>${esc(err.message)}</p>
+      </div>`;
+  }
+}
+
+document.getElementById('newsForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const form = e.target;
+  const data = new FormData(form);
+  try{
+    const res = await fetch('/api/news', { method:'POST', body: data });
+    if(res.ok){ showToast('Published', 'News posted!'); form.reset(); loadNews(); }
+    else showToast('Error', 'Publish failed.', 'error');
+  }catch{ showToast('Error', 'Network error.', 'error'); }
+});
+
+document.getElementById('editForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const id = $('editId').value;
+  const form = e.target;
+  const data = new FormData(form);
+  data.delete('id');
+  try{
+    const res = await fetch('/api/news/' + id, { method:'PUT', body: data });
+    if(res.ok){ showToast('Updated', 'News updated.'); closeEditModal(); loadNews(); }
+    else showToast('Error', 'Update failed.', 'error');
+  }catch{ showToast('Error', 'Network error.', 'error'); }
+});
+
+/* ══════════════════════════════════════════
+   MESSAGES  ← NEW
+══════════════════════════════════════════ */
+async function loadMessages(){
+  try{
+    const res = await fetch('/api/messages');
+    if(res.status === 401){ msgList.innerHTML = '<div class="empty"><p>Unauthorized</p></div>'; return; }
+    const msgs = await res.json();
+
+    const unread = msgs.filter(m => !m.read).length;
+    msgBadge.textContent = unread;
+    msgBadge.dataset.count = unread;
+    miniMsgs.textContent = msgs.length;
+    totalMsgsEl.textContent = msgs.length;
+
+    if(!msgs.length){
+      msgList.innerHTML = `
+        <div class="empty">
+          <i class="fa-regular fa-envelope"></i>
+          <h3>No messages yet</h3>
+          <p>Visitor messages from the contact form will appear here.</p>
+        </div>`;
+      return;
+    }
+
+    msgList.innerHTML = msgs.map(m => `
+      <div class="item ${m.read ? '' : 'unread'}" data-id="${m.id}">
+        <div class="icon-tile"><i class="fa-regular fa-envelope"></i></div>
+        <div class="body">
+          <h4>${esc(m.subject)}</h4>
+          <div class="from">
+            <strong>${esc(m.name)}</strong> &lt;${esc(m.email)}&gt;
+          </div>
+          <p>${esc((m.message || '').substring(0, 180))}${m.message && m.message.length > 180 ? '...' : ''}</p>
+          <div class="meta">
+            <span><i class="fa-regular fa-clock"></i> ${fmtDateTime(m.created_at)}</span>
+            <span><i class="fa-regular fa-circle${m.read ? '-check' : ''}"></i> ${m.read ? 'Read' : 'Unread'}</span>
+          </div>
+        </div>
+        <div class="actions">
+          <button class="reply" title="View / Reply" onclick="viewMessage(${m.id})"><i class="fa-regular fa-eye"></i></button>
+          ${!m.read ? `<button class="mark" title="Mark as read" onclick="markMsgRead(${m.id})"><i class="fa-solid fa-check"></i></button>` : ''}
+          <button class="del" title="Delete" onclick="deleteMsg(${m.id})"><i class="fa-regular fa-trash-can"></i></button>
+        </div>
+      </div>
+    `).join('');
+
+    window._msgs = msgs; // cache for the view modal
+  }catch(err){
+    console.error(err);
+    msgList.innerHTML = `
+      <div class="empty">
+        <i class="fa-regular fa-circle-xmark"></i>
+        <h3>Failed to load messages</h3>
+        <p>${esc(err.message)}</p>
+      </div>`;
+  }
+}
+
+window.viewMessage = (id) => {
+  const m = (window._msgs || []).find(x => x.id === id);
+  if(!m) return;
+  $('msgViewSubject').textContent = m.subject || 'No subject';
+  $('msgViewName').textContent = m.name || 'Unknown';
+  const emailEl = $('msgViewEmail');
+  emailEl.textContent = m.email || '';
+  emailEl.href = 'mailto:' + (m.email || '');
+  $('msgViewDate').textContent = fmtDateTime(m.created_at);
+  $('msgViewBody').textContent = m.message || '';
+  $('msgViewReply').href = `mailto:${m.email}?subject=Re: ${encodeURIComponent(m.subject || '')}`;
+  $('msgViewMark').onclick = () => markMsgRead(m.id, true);
+  msgViewModal.classList.add('active');
+
+  // Auto-mark as read when opened
+  if(!m.read) markMsgRead(m.id, false, true);
+};
+
+window.markMsgRead = async (id, closeAfter = false, silent = false) => {
+  try{
+    const res = await fetch('/api/messages/read', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ id })
+    });
+    if(res.ok && !silent) showToast('Marked', 'Message marked as read.');
+    if(closeAfter) closeMsgView();
+    loadMessages();
+  }catch{ showToast('Error', 'Network error.', 'error'); }
+};
+
+window.deleteMsg = async (id) => {
+  if(!confirm('Delete this message?')) return;
+  try{
+    const res = await fetch('/api/messages/' + id, { method:'DELETE' });
+    if(res.ok){ showToast('Deleted', 'Message removed.'); loadMessages(); }
+    else showToast('Error', 'Could not delete.', 'error');
+  }catch{ showToast('Error', 'Network error.', 'error'); }
+};
+
+$('btnAllReadMsgs').addEventListener('click', async () => {
+  try{
+    await fetch('/api/messages/read', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ all: true })
+    });
+    showToast('Success', 'All messages marked as read.');
+    loadMessages();
+  }catch{ showToast('Error', 'Network error.', 'error'); }
+});
+
+$('btnClearMsgs').addEventListener('click', async () => {
+  if(!confirm('Delete ALL messages? This cannot be undone.')) return;
+  try{
+    const r = await fetch('/api/messages');
+    const msgs = await r.json();
+    for(const m of msgs){
+      await fetch('/api/messages/' + m.id, { method:'DELETE' });
+    }
+    showToast('Cleared', 'All messages deleted.');
+    loadMessages();
+  }catch{ showToast('Error', 'Network error.', 'error'); }
+});
+
+/* ══════════════════════════════════════════
+   NOTIFICATIONS
+══════════════════════════════════════════ */
+async function loadNotifs(){
+  try{
+    const res = await fetch('/api/notifications');
+    const notifs = await res.json();
+    notifCount.textContent = notifs.length + (notifs.length === 1 ? ' item' : ' items');
+
+    if(!notifs.length){
+      notifList.innerHTML = `
+        <div class="empty">
+          <i class="fa-regular fa-bell"></i>
+          <h3>No notifications</h3>
+          <p>You're all caught up!</p>
+        </div>`;
+      return;
+    }
+
+    notifList.innerHTML = notifs.map(n => {
+      const icon = n.type === 'youtube'
+        ? 'fa-brands fa-youtube'
+        : n.type === 'news'
+          ? 'fa-regular fa-newspaper'
+          : n.type === 'contact'
+            ? 'fa-regular fa-envelope'
+            : 'fa-regular fa-bell';
+      const media = n.image_url
+        ? `<img class="thumb" src="${esc(n.image_url)}" alt="">`
+        : `<div class="icon-tile"><i class="${icon}"></i></div>`;
+      return `
+        <div class="item ${n.read ? '' : 'unread'}">
+          ${media}
+          <div class="body">
+            <h4>${esc(n.title)}</h4>
+            <p>${esc(n.message)}</p>
+            <div class="meta">
+              <span><i class="fa-regular fa-clock"></i> ${fmtDateTime(n.created_at)}</span>
+              <span><i class="fa-regular fa-tag"></i> ${esc(n.type || 'info')}</span>
             </div>
-            <form id="changePwForm">
-                <div class="form-group">
-                    <label for="currentPassword"><i class="fa-regular fa-lock"></i> Current</label>
-                    <input type="password" id="currentPassword" placeholder="Current password" required />
-                </div>
-                <div class="form-group">
-                    <label for="newPassword"><i class="fa-regular fa-lock"></i> New</label>
-                    <input type="password" id="newPassword" placeholder="New (min 6 chars)" required />
-                </div>
-                <div class="form-group">
-                    <label for="confirmPassword"><i class="fa-regular fa-check-double"></i> Confirm</label>
-                    <input type="password" id="confirmPassword" placeholder="Confirm new" required />
-                </div>
-                <div class="form-actions">
-                    <button type="submit" class="btn btn-primary"><i class="fa-regular fa-floppy-disk"></i> Update</button>
-                    <button type="button" class="btn btn-outline btn-sm" id="changePwCancel">Cancel</button>
-                </div>
-            </form>
-        </div>
-    </div>
+          </div>
+          <div class="actions">
+            <button class="del" title="Delete" onclick="deleteNotif(${n.id})">
+              <i class="fa-regular fa-trash-can"></i>
+            </button>
+          </div>
+        </div>`;
+    }).join('');
+  }catch(err){
+    notifList.innerHTML = `<div class="empty"><p>Failed to load</p></div>`;
+  }
+}
 
-    <!-- ─── CHANGE USERNAME MODAL ─── -->
-    <div class="modal-overlay" id="changeUsernameModal">
-        <div class="modal">
-            <div class="modal-header">
-                <h3><i class="fa-regular fa-user-pen"></i> Change <span>Username</span></h3>
-                <button class="modal-close" id="changeUsernameClose">&times;</button>
-            </div>
-            <form id="changeUsernameForm">
-                <div class="form-group">
-                    <label for="newUsername"><i class="fa-regular fa-user"></i> New Username</label>
-                    <input type="text" id="newUsername" placeholder="Enter new username" required />
-                    <small style="color:#888;font-size:11px;margin-top:3px;">Unique, at least 3 characters.</small>
-                </div>
-                <div class="form-actions">
-                    <button type="submit" class="btn btn-primary"><i class="fa-regular fa-floppy-disk"></i> Update</button>
-                    <button type="button" class="btn btn-outline btn-sm" id="changeUsernameCancel">Cancel</button>
-                </div>
-            </form>
-        </div>
-    </div>
+window.deleteNotif = async (id) => {
+  try{
+    await fetch('/api/notifications/' + id, { method:'DELETE' });
+    loadNotifs();
+  }catch{ showToast('Error', 'Network error.', 'error'); }
+};
 
-    <!-- TOAST -->
-    <div class="toast" id="toast">
-        <div class="icon"><i class="fa-regular fa-circle-check"></i></div>
-        <div class="content">
-            <strong id="toastTitle">Success</strong>
-            <span id="toastMessage">Done.</span>
-        </div>
-        <button class="close-toast" id="toastClose">&times;</button>
-    </div>
+/* ══════════════════════════════════════════
+   ADMINS
+══════════════════════════════════════════ */
+async function loadAdmins(){
+  const container = $('adminList');
+  try{
+    const res = await fetch('/api/admin/users');
+    if(!res.ok) throw new Error('Failed');
+    const users = await res.json();
 
-    <script>
-        // ── DOM refs ──
-        const newsContainer = document.getElementById('newsContainer');
-        const totalNewsEl = document.getElementById('totalNews');
-        const latestDateEl = document.getElementById('latestDate');
-        const withImagesEl = document.getElementById('withImages');
-        const lastActivityEl = document.getElementById('lastActivity');
-        const newsCountEl = document.getElementById('newsCount');
-        const usernameDisplay = document.getElementById('usernameDisplay');
-        const greetingName = document.getElementById('greetingName');
-        const miniTotal = document.getElementById('miniTotal');
-        const miniImages = document.getElementById('miniImages');
-        const mobileUsernameDisplay = document.getElementById('mobileUsernameDisplay');
+    if(!users.length){
+      container.innerHTML = `
+        <div class="empty">
+          <i class="fa-regular fa-users"></i>
+          <h3>No admins found</h3>
+        </div>`;
+      return;
+    }
 
-        // ── Toast helper ──
-        function showToast(title, message, icon = 'fa-regular fa-circle-check') {
-            const toast = document.getElementById('toast');
-            document.getElementById('toastTitle').textContent = title;
-            document.getElementById('toastMessage').textContent = message;
-            toast.querySelector('.icon i').className = icon;
-            toast.classList.add('show');
-            clearTimeout(toast._timeout);
-            toast._timeout = setTimeout(() => toast.classList.remove('show'), 4000);
-        }
-        document.getElementById('toastClose').addEventListener('click', () => {
-            document.getElementById('toast').classList.remove('show');
-        });
+    container.innerHTML = users.map(u => `
+      <div class="admin-row">
+        <span><i class="fa-regular fa-user-circle"></i> ${esc(u.username)}</span>
+        <button class="btn btn-danger btn-sm delete-admin-btn" data-id="${u.id}">
+          <i class="fa-regular fa-trash-can"></i>
+        </button>
+      </div>
+    `).join('');
 
-        // ── Hamburger toggle ──
-        const hamburgerBtn = document.getElementById('hamburgerToggle');
-        const mobileMenu = document.getElementById('mobileMenu');
-        hamburgerBtn.addEventListener('click', function(e) {
-            e.stopPropagation();
-            mobileMenu.classList.toggle('open');
-            const icon = this.querySelector('i');
-            if (mobileMenu.classList.contains('open')) {
-                icon.className = 'fa-solid fa-xmark';
-            } else {
-                icon.className = 'fa-solid fa-bars';
-            }
-        });
+    document.querySelectorAll('.delete-admin-btn').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        if(!confirm('Delete this admin?')) return;
+        try{
+          const res = await fetch('/api/admin/users/' + btn.dataset.id, { method:'DELETE' });
+          const data = await res.json();
+          if(res.ok){ showToast('Deleted', 'Admin removed.'); loadAdmins(); }
+          else showToast('Error', data.error || 'Could not delete.', 'error');
+        }catch{ showToast('Error', 'Network error.', 'error'); }
+      });
+    });
+  }catch{
+    container.innerHTML = `
+      <div class="empty">
+        <i class="fa-regular fa-circle-xmark"></i>
+        <h3>Failed to load admins</h3>
+      </div>`;
+  }
+}
 
-        document.addEventListener('click', function(e) {
-            if (!e.target.closest('.dashboard-header')) {
-                mobileMenu.classList.remove('open');
-                hamburgerBtn.querySelector('i').className = 'fa-solid fa-bars';
-            }
-        });
+$('createAdminForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const username = $('newAdminUsername').value.trim();
+  const password = $('newAdminPassword').value.trim();
+  if(!username || username.length < 3){ showToast('Error', 'Min 3 characters.', 'error'); return; }
+  if(!password || password.length < 6){ showToast('Error', 'Min 6 characters.', 'error'); return; }
+  try{
+    const res = await fetch('/api/admin/register', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ username, password })
+    });
+    const data = await res.json();
+    if(res.ok){
+      showToast('Created', `Admin "${username}" added.`);
+      $('newAdminUsername').value = '';
+      $('newAdminPassword').value = '';
+      loadAdmins();
+    } else showToast('Error', data.error || 'Could not create.', 'error');
+  }catch{ showToast('Error', 'Network error.', 'error'); }
+});
 
-        // ── Edit Modal ──
-        const editModal = document.getElementById('editModal');
-        const editModalClose = document.getElementById('modalClose');
-        const editModalCancel = document.getElementById('modalCancel');
-        function openEditModal(item) {
-            document.getElementById('editId').value = item.id;
-            document.getElementById('editTitle').value = item.title || '';
-            document.getElementById('editContent').value = item.content || '';
-            document.getElementById('editFullContent').value = item.full_content || item.content || '';
-            document.getElementById('editImage').value = '';
-            editModal.classList.add('active');
-        }
-        function closeEditModal() { editModal.classList.remove('active'); }
-        editModalClose.addEventListener('click', closeEditModal);
-        editModalCancel.addEventListener('click', closeEditModal);
-        editModal.addEventListener('click', (e) => { if (e.target === editModal) closeEditModal(); });
+/* ══════════════════════════════════════════
+   CHANGE PASSWORD
+══════════════════════════════════════════ */
+$('changePwForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const current = $('currentPassword').value;
+  const newPw = $('newPassword').value;
+  const confirm = $('confirmPassword').value;
+  if(newPw !== confirm){ showToast('Error', 'Passwords do not match.', 'error'); return; }
+  if(newPw.length < 6){ showToast('Error', 'Min 6 characters.', 'error'); return; }
+  try{
+    const res = await fetch('/api/change-password', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ currentPassword: current, newPassword: newPw })
+    });
+    const data = await res.json();
+    if(res.ok){ showToast('Success', 'Password updated.'); closePwModal(); }
+    else showToast('Error', data.error || 'Update failed.', 'error');
+  }catch{ showToast('Error', 'Network error.', 'error'); }
+});
 
-        // ── Password Modal ──
-        const pwModal = document.getElementById('changePwModal');
-        const pwClose = document.getElementById('changePwClose');
-        const pwCancel = document.getElementById('changePwCancel');
-        function openPwModal() {
-            document.getElementById('currentPassword').value = '';
-            document.getElementById('newPassword').value = '';
-            document.getElementById('confirmPassword').value = '';
-            pwModal.classList.add('active');
-        }
-        function closePwModal() { pwModal.classList.remove('active'); }
-        pwClose.addEventListener('click', closePwModal);
-        pwCancel.addEventListener('click', closePwModal);
-        pwModal.addEventListener('click', (e) => { if (e.target === pwModal) closePwModal(); });
-        document.getElementById('changePwBtn').addEventListener('click', openPwModal);
-        document.getElementById('mobileChangePwBtn').addEventListener('click', openPwModal);
+/* ══════════════════════════════════════════
+   CHANGE USERNAME
+══════════════════════════════════════════ */
+$('changeUsernameForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const newUsername = $('newUsername').value.trim();
+  if(!newUsername || newUsername.length < 3){ showToast('Error', 'Min 3 characters.', 'error'); return; }
+  try{
+    const res = await fetch('/api/change-username', {
+      method:'PUT',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ newUsername })
+    });
+    const data = await res.json();
+    if(res.ok){
+      showToast('Success', 'Username updated.');
+      usernameDisplay.textContent = newUsername;
+      greetingName.textContent = newUsername;
+      mobileUsernameDisplay.textContent = newUsername;
+      closeUnameModal();
+    } else showToast('Error', data.error || 'Update failed.', 'error');
+  }catch{ showToast('Error', 'Network error.', 'error'); }
+});
 
-        // ── Username Modal ──
-        const unameModal = document.getElementById('changeUsernameModal');
-        const unameClose = document.getElementById('changeUsernameClose');
-        const unameCancel = document.getElementById('changeUsernameCancel');
-        function openUnameModal() {
-            document.getElementById('newUsername').value = '';
-            unameModal.classList.add('active');
-        }
-        function closeUnameModal() { unameModal.classList.remove('active'); }
-        unameClose.addEventListener('click', closeUnameModal);
-        unameCancel.addEventListener('click', closeUnameModal);
-        unameModal.addEventListener('click', (e) => { if (e.target === unameModal) closeUnameModal(); });
-        document.getElementById('changeUsernameBtn').addEventListener('click', openUnameModal);
-        document.getElementById('mobileChangeUsernameBtn').addEventListener('click', openUnameModal);
+/* ══════════════════════════════════════════
+   LOGOUT
+══════════════════════════════════════════ */
+async function doLogout(){
+  await fetch('/api/logout', { method:'POST' });
+  window.location.href = '/admin/login.html';
+}
+$('logoutBtn').addEventListener('click', doLogout);
+$('mobileLogoutBtn').addEventListener('click', doLogout);
 
-        // ── Session ──
-        async function checkSession() {
-            try {
-                const res = await fetch('/api/session');
-                const data = await res.json();
-                if (!data.loggedIn) window.location.href = '/admin/login.html';
-                else {
-                    const uname = data.user?.username || 'Admin';
-                    usernameDisplay.textContent = uname;
-                    greetingName.textContent = uname;
-                    mobileUsernameDisplay.textContent = uname;
-                }
-            } catch { window.location.href = '/admin/login.html'; }
-        }
-        checkSession();
+/* ══════════════════════════════════════════
+   CLOCK
+══════════════════════════════════════════ */
+function updateClock(){
+  const now = new Date();
+  const opts = { weekday:'short', year:'numeric', month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' };
+  $('datetimeDisplay').innerHTML = `<i class="fa-regular fa-clock"></i> ${now.toLocaleDateString('en-US', opts)}`;
+}
+updateClock();
+setInterval(updateClock, 30000);
 
-        // ── Typewriter ──
-        function typeWriter() {
-            const texts = ['Ready to update?', 'Share the good news!', 'Inspire faith.', 'Worship in action.'];
-            let index = 0, charIndex = 0, isDeleting = false, current = '';
-            const el = document.getElementById('typewriterText');
-            function type() {
-                const full = texts[index];
-                if (isDeleting) {
-                    current = full.substring(0, charIndex--);
-                    el.textContent = current;
-                    if (charIndex < 0) { isDeleting = false; index = (index + 1) % texts.length; setTimeout(type, 600); return; }
-                    setTimeout(type, 30);
-                } else {
-                    current = full.substring(0, charIndex++);
-                    el.textContent = current;
-                    if (charIndex > full.length) { isDeleting = true; setTimeout(type, 1800); return; }
-                    setTimeout(type, 60);
-                }
-            }
-            type();
-        }
-        typeWriter();
+/* ══════════════════════════════════════════
+   INIT
+══════════════════════════════════════════ */
+loadNews();
+loadMessages();
+loadNotifs();
+loadAdmins();
 
-        // ── Load News ──
-        async function loadNews() {
-            try {
-                const res = await fetch('/api/news');
-                const news = await res.json();
-                totalNewsEl.textContent = news.length;
-                newsCountEl.textContent = news.length + ' items';
-                miniTotal.textContent = news.length;
-                const withImg = news.filter(n => n.image_url).length;
-                withImagesEl.textContent = withImg;
-                miniImages.textContent = withImg;
-                if (news.length > 0) {
-                    const latest = new Date(news[0].created_at);
-                    latestDateEl.textContent = latest.toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
-                    lastActivityEl.textContent = latest.toLocaleDateString('en-US', { month:'short', day:'numeric' });
-                } else {
-                    latestDateEl.textContent = '—';
-                    lastActivityEl.textContent = '—';
-                }
-                if (!news.length) {
-                    newsContainer.innerHTML = `<div class="empty-state"><i class="fa-regular fa-newspaper"></i><h3>No news yet</h3><p>Publish your first update above.</p></div>`;
-                    return;
-                }
-                let html = '<div class="news-grid">';
-                news.forEach(item => {
-                    const title = item.title || 'Untitled';
-                    const content = item.content || 'No content.';
-                    const imgHtml = item.image_url ? `<img class="thumb" src="${item.image_url}" alt="${title}" />` : '';
-                    const date = item.created_at ? new Date(item.created_at).toLocaleDateString('en-US', { year:'numeric', month:'short', day:'numeric' }) : 'Unknown';
-                    html += `
-                        <div class="news-card">
-                            ${imgHtml}
-                            <div class="body">
-                                <h4>${title}</h4>
-                                <p>${content}</p>
-                                <div class="meta">
-                                    <span class="date"><i class="fa-regular fa-calendar"></i> ${date}</span>
-                                    <div class="actions">
-                                        <button class="btn btn-primary btn-sm edit-btn" data-id="${item.id}"><i class="fa-regular fa-pen-to-square"></i></button>
-                                        <button class="btn btn-danger btn-sm delete-btn" data-id="${item.id}"><i class="fa-regular fa-trash-can"></i></button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                });
-                html += '</div>';
-                newsContainer.innerHTML = html;
-
-                document.querySelectorAll('.edit-btn').forEach(btn => {
-                    btn.addEventListener('click', (e) => {
-                        e.stopPropagation();
-                        const id = parseInt(btn.dataset.id);
-                        const item = news.find(n => n.id === id);
-                        if (item) openEditModal(item);
-                    });
-                });
-                document.querySelectorAll('.delete-btn').forEach(btn => {
-                    btn.addEventListener('click', async (e) => {
-                        e.stopPropagation();
-                        const id = btn.dataset.id;
-                        if (confirm('Delete this news?')) {
-                            try {
-                                const res = await fetch(`/api/news/${id}`, { method:'DELETE' });
-                                if (res.ok) { showToast('Deleted', 'News removed.', 'fa-regular fa-trash-can'); loadNews(); }
-                                else showToast('Error', 'Could not delete.', 'fa-regular fa-circle-xmark');
-                            } catch { showToast('Error', 'Network error.', 'fa-regular fa-circle-xmark'); }
-                        }
-                    });
-                });
-            } catch (error) {
-                console.error('Failed to load news:', error);
-                newsContainer.innerHTML = `<div class="empty-state"><i class="fa-regular fa-circle-xmark"></i><h3>Failed to load</h3><p>${error.message}</p></div>`;
-            }
-        }
-
-        // ── Create News ──
-        document.getElementById('newsForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const form = e.target;
-            const data = new FormData(form);
-            try {
-                const res = await fetch('/api/news', { method:'POST', body:data });
-                if (res.ok) { showToast('Published', 'News posted!', 'fa-regular fa-circle-check'); form.reset(); loadNews(); }
-                else showToast('Error', 'Publish failed.', 'fa-regular fa-circle-xmark');
-            } catch { showToast('Error', 'Network error.', 'fa-regular fa-circle-xmark'); }
-        });
-
-        // ── Edit News ──
-        document.getElementById('editForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const id = document.getElementById('editId').value;
-            const form = e.target;
-            const data = new FormData(form);
-            data.delete('id');
-            try {
-                const res = await fetch(`/api/news/${id}`, { method:'PUT', body:data });
-                if (res.ok) { showToast('Updated', 'News updated.', 'fa-regular fa-circle-check'); closeEditModal(); loadNews(); }
-                else showToast('Error', 'Update failed.', 'fa-regular fa-circle-xmark');
-            } catch { showToast('Error', 'Network error.', 'fa-regular fa-circle-xmark'); }
-        });
-
-        // ── Change Password ──
-        document.getElementById('changePwForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const current = document.getElementById('currentPassword').value;
-            const newPw = document.getElementById('newPassword').value;
-            const confirm = document.getElementById('confirmPassword').value;
-            if (newPw !== confirm) { showToast('Error', 'Passwords do not match.', 'fa-regular fa-circle-xmark'); return; }
-            if (newPw.length < 6) { showToast('Error', 'Min 6 characters.', 'fa-regular fa-circle-xmark'); return; }
-            try {
-                const res = await fetch('/api/change-password', {
-                    method:'POST',
-                    headers:{ 'Content-Type':'application/json' },
-                    body:JSON.stringify({ currentPassword:current, newPassword:newPw })
-                });
-                const data = await res.json();
-                if (res.ok) { showToast('Success', 'Password updated.', 'fa-regular fa-circle-check'); closePwModal(); }
-                else showToast('Error', data.error || 'Update failed.', 'fa-regular fa-circle-xmark');
-            } catch { showToast('Error', 'Network error.', 'fa-regular fa-circle-xmark'); }
-        });
-
-        // ── Change Username ──
-        document.getElementById('changeUsernameForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const newUsername = document.getElementById('newUsername').value.trim();
-            if (!newUsername || newUsername.length < 3) { showToast('Error', 'Min 3 characters.', 'fa-regular fa-circle-xmark'); return; }
-            try {
-                const res = await fetch('/api/change-username', {
-                    method:'PUT',
-                    headers:{ 'Content-Type':'application/json' },
-                    body:JSON.stringify({ newUsername })
-                });
-                const data = await res.json();
-                if (res.ok) {
-                    showToast('Success', 'Username updated.', 'fa-regular fa-circle-check');
-                    usernameDisplay.textContent = newUsername;
-                    greetingName.textContent = newUsername;
-                    mobileUsernameDisplay.textContent = newUsername;
-                    closeUnameModal();
-                } else showToast('Error', data.error || 'Update failed.', 'fa-regular fa-circle-xmark');
-            } catch { showToast('Error', 'Network error.', 'fa-regular fa-circle-xmark'); }
-        });
-
-        // ── Admin Management ──
-        async function loadAdmins() {
-            const container = document.getElementById('adminList');
-            try {
-                const res = await fetch('/api/admin/users');
-                if (!res.ok) throw new Error('Failed');
-                const users = await res.json();
-                if (!users.length) {
-                    container.innerHTML = `<div class="empty-state" style="padding:16px;"><i class="fa-regular fa-users"></i><h4 style="margin:6px 0;font-size:16px;">No admins found.</h4></div>`;
-                    return;
-                }
-                let html = `<div style="display:grid;gap:6px;margin-top:8px;">`;
-                users.forEach(u => {
-                    html += `
-                        <div style="display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,0.03);padding:8px 14px;border-radius:10px;border:1px solid rgba(255,255,255,0.03);">
-                            <span><i class="fa-regular fa-user-circle" style="color:#d7ad45;margin-right:8px;"></i> ${u.username}</span>
-                            <button class="btn btn-danger btn-sm delete-admin-btn" data-id="${u.id}" style="padding:2px 10px;font-size:11px;"><i class="fa-regular fa-trash-can"></i></button>
-                        </div>
-                    `;
-                });
-                html += `</div>`;
-                container.innerHTML = html;
-                document.querySelectorAll('.delete-admin-btn').forEach(btn => {
-                    btn.addEventListener('click', async (e) => {
-                        const id = btn.dataset.id;
-                        if (!confirm('Delete this admin?')) return;
-                        try {
-                            const res = await fetch(`/api/admin/users/${id}`, { method:'DELETE' });
-                            const data = await res.json();
-                            if (res.ok) { showToast('Deleted', 'Admin removed.', 'fa-regular fa-trash-can'); loadAdmins(); }
-                            else showToast('Error', data.error || 'Could not delete.', 'fa-regular fa-circle-xmark');
-                        } catch { showToast('Error', 'Network error.', 'fa-regular fa-circle-xmark'); }
-                    });
-                });
-            } catch {
-                container.innerHTML = `<div class="empty-state" style="padding:16px;"><i class="fa-regular fa-circle-xmark"></i><h4 style="margin:6px 0;font-size:16px;">Failed to load admins.</h4></div>`;
-            }
-        }
-
-        document.getElementById('createAdminForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const username = document.getElementById('newAdminUsername').value.trim();
-            const password = document.getElementById('newAdminPassword').value.trim();
-            if (!username || username.length < 3) { showToast('Error', 'Min 3 chars.', 'fa-regular fa-circle-xmark'); return; }
-            if (!password || password.length < 6) { showToast('Error', 'Min 6 chars.', 'fa-regular fa-circle-xmark'); return; }
-            try {
-                const res = await fetch('/api/admin/register', {
-                    method:'POST',
-                    headers:{ 'Content-Type':'application/json' },
-                    body:JSON.stringify({ username, password })
-                });
-                const data = await res.json();
-                if (res.ok) {
-                    showToast('Created', `Admin "${username}" added.`, 'fa-regular fa-circle-check');
-                    document.getElementById('newAdminUsername').value = '';
-                    document.getElementById('newAdminPassword').value = '';
-                    loadAdmins();
-                } else showToast('Error', data.error || 'Could not create.', 'fa-regular fa-circle-xmark');
-            } catch { showToast('Error', 'Network error.', 'fa-regular fa-circle-xmark'); }
-        });
-
-        // ── Logout ──
-        document.getElementById('logoutBtn').addEventListener('click', async () => {
-            await fetch('/api/logout', { method:'POST' });
-            window.location.href = '/admin/login.html';
-        });
-        document.getElementById('mobileLogoutBtn').addEventListener('click', async () => {
-            await fetch('/api/logout', { method:'POST' });
-            window.location.href = '/admin/login.html';
-        });
-
-        // ── Clock ──
-        function updateClock() {
-            const now = new Date();
-            const opts = { weekday:'short', year:'numeric', month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' };
-            document.getElementById('datetimeDisplay').innerHTML = `<i class="fa-regular fa-clock"></i> ${now.toLocaleDateString('en-US', opts)}`;
-        }
-        updateClock();
-        setInterval(updateClock, 30000);
-
-        // ── Init ──
-        loadNews();
-        loadAdmins();
-    </script>
+// Auto-refresh messages + notifications every 25s
+setInterval(() => {
+  loadMessages();
+  loadNotifs();
+}, 25000);
+</script>
 </body>
 </html>
